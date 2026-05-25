@@ -53,6 +53,7 @@ dependencies:
   
   # UI
   flutter_svg: ^2.0.0
+  equatable: ^2.0.8
 
 dev_dependencies:
   flutter_test:
