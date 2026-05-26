@@ -45,4 +45,6 @@ class AppConstants {
   static const String routeAIInsightInput = '/ai-insight-input';
   static const String routeAIInsightResult = '/ai-insight-result';
 
+  /// doctor communication routes
+
 }
