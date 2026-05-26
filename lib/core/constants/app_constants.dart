@@ -11,6 +11,7 @@ class AppConstants {
   static const String keyUserEmail = 'user_email';
   static const String keyUserName = 'user_name';
   static const String keyOnboardingCompleted = 'onboarding_completed';
+  static const String keySymptoms = 'symptoms';
 
   /// Validation Constants
   static const int minPasswordLength = 6;
@@ -23,5 +24,10 @@ class AppConstants {
   static const String routeOnboarding = '/onboarding';
   static const String routeHealthProfile = '/health-profile';
   static const String routeDashboard = '/dashboard';
+
+/// Symptom Tracking Routes
+  static const String routeAddSymptom = '/add-symptom';
+  static const String routeSymptomHistory = '/symptom-history';
+  static const String routeEditSymptom = '/edit-symptom';
 
 }

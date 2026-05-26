@@ -1,31 +1,10 @@
-
 import 'package:equatable/equatable.dart';
 
-/// Represents a symptom log entry for a user, capturing details about their menstrual cycle, symptoms, and mood.
-enum PeriodStatus {
-  none,
-  started,
-  ongoing,
-  ended,
-} 
+enum PeriodStatus { none, started, ongoing, ended }
+enum FlowLevel { none, light, medium, heavy }
+enum Mood { calm, anxious, tired, irritable, happy, sad }
 
-enum FlowLevel {
-  none,
-  light,
-  medium,
-  heavy,
-}
-
-enum Mood {
-  calm,
-  anxious,
-  tired,
-  irritable,
-  happy,
-  sad,
-}
-
-
+/// SymptomLog model representing a single symptom entry
 class SymptomLog extends Equatable {
   final String id;
   final String userId;
@@ -39,7 +18,7 @@ class SymptomLog extends Equatable {
   final DateTime createdAt;
   final DateTime updatedAt;
 
-/// Creates a new instance of [SymptomLog] with the provided parameters.
+/// Constructor for SymptomLog
   const SymptomLog({
     required this.id,
     required this.userId,
@@ -54,25 +33,72 @@ class SymptomLog extends Equatable {
     required this.updatedAt,
   });
 
-/// Returns a list of properties that are used to determine equality between instances of [SymptomLog].
   @override
-  List<Object?> get props => [
-        id,
-        userId,
-        date,
-        periodStatus,
-        painLevel,
-      ];
+  List<Object?> get props => [id, userId, date, periodStatus, painLevel];
 
-  /// Validates the pain level to ensure it is within the acceptable range of 0 to 10.
-  static bool isValidPainLevel(int level) {
-    return level >= 0 && level <= 10;
+  // Validation methods (for testing)
+  static bool isValidPainLevel(int level) => level >= 0 && level <= 10;
+  static bool isValidSymptoms(List<String> symptoms) => symptoms.isNotEmpty;
+
+  // Convert to JSON for storage
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'userId': userId,
+      'date': date.toIso8601String(),
+      'periodStatus': periodStatus.toString().split('.').last,
+      'flowLevel': flowLevel.toString().split('.').last,
+      'painLevel': painLevel,
+      'mood': mood.toString().split('.').last,
+      'symptoms': symptoms,
+      'notes': notes,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
+    };
   }
 
-/// Validates that the list of symptoms is not empty, ensuring that at least one symptom is logged.
-  static void validateSymptomLog(List<String> symptoms) => symptoms.isNotEmpty;
+  // Create from JSON
+  factory SymptomLog.fromJson(Map<String, dynamic> json) {
+    return SymptomLog(
+      id: json['id'],
+      userId: json['userId'],
+      date: DateTime.parse(json['date']),
+      periodStatus: _parsePeriodStatus(json['periodStatus']),
+      flowLevel: _parseFlowLevel(json['flowLevel']),
+      painLevel: json['painLevel'],
+      mood: _parseMood(json['mood']),
+      symptoms: List<String>.from(json['symptoms']),
+      notes: json['notes'],
+      createdAt: DateTime.parse(json['createdAt']),
+      updatedAt: DateTime.parse(json['updatedAt']),
+    );
+  }
 
-/// Factory constructor to create an empty [SymptomLog] instance with default values for a given user ID.
+/// Helper methods to parse enums from strings
+  static PeriodStatus _parsePeriodStatus(String value) {
+    return PeriodStatus.values.firstWhere(
+      (e) => e.toString().split('.').last == value,
+      orElse: () => PeriodStatus.none,
+    );
+  }
+
+/// Helper method to parse FlowLevel from string
+  static FlowLevel _parseFlowLevel(String value) {
+    return FlowLevel.values.firstWhere(
+      (e) => e.toString().split('.').last == value,
+      orElse: () => FlowLevel.none,
+    );
+  }
+
+/// Helper method to parse Mood from string
+  static Mood _parseMood(String value) {
+    return Mood.values.firstWhere(
+      (e) => e.toString().split('.').last == value,
+      orElse: () => Mood.calm,
+    );
+  }
+
+  // Factory for empty state
   factory SymptomLog.empty(String userId) {
     return SymptomLog(
       id: '',
@@ -84,9 +110,36 @@ class SymptomLog extends Equatable {
       mood: Mood.calm,
       symptoms: [],
       createdAt: DateTime.now(),
-      
       updatedAt: DateTime.now(),
     );
   }
-
+  
+  // Copy with method
+  SymptomLog copyWith({
+    String? id,
+    String? userId,
+    DateTime? date,
+    PeriodStatus? periodStatus,
+    FlowLevel? flowLevel,
+    int? painLevel,
+    Mood? mood,
+    List<String>? symptoms,
+    String? notes,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return SymptomLog(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      date: date ?? this.date,
+      periodStatus: periodStatus ?? this.periodStatus,
+      flowLevel: flowLevel ?? this.flowLevel,
+      painLevel: painLevel ?? this.painLevel,
+      mood: mood ?? this.mood,
+      symptoms: symptoms ?? this.symptoms,
+      notes: notes ?? this.notes,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? DateTime.now(),
+    );
+  }
 }

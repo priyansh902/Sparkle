@@ -1,6 +1,9 @@
 
 import 'package:go_router/go_router.dart';
 import 'package:sparkle_lite/core/constants/app_constants.dart';
+import 'package:sparkle_lite/features/symptom_tracker/edit_symptom_screen.dart';
+import 'package:sparkle_lite/features/symptom_tracker/symptom_history_screen.dart';
+import 'package:sparkle_lite/features/symptom_tracker/add_symptom_screen.dart';
 import 'package:sparkle_lite/features/welcome/welcome_screen.dart';
 import 'package:sparkle_lite/features/auth/login_screen.dart';
 import 'package:sparkle_lite/features/auth/signup_screen.dart';
@@ -46,6 +49,27 @@ final GoRouter appRouter = GoRouter(
       path: AppConstants.routeDashboard,
       name: 'dashboard',
       builder: (context, state) => const DashboardScreen(),
+    ),
+    GoRoute(
+      path: AppConstants.routeAddSymptom,
+      name: 'add-symptom',
+      builder: (context, state) => const AddSymptomScreen(),
+    ),
+    GoRoute(
+      path: AppConstants.routeSymptomHistory,
+      name: 'symptom-history',
+      builder: (context, state) => const SymptomHistoryScreen(),
+    ),
+    GoRoute(
+      path: '${AppConstants.routeEditSymptom}',
+      name: 'edit-symptom',
+      builder: (context, state) {
+        final id = state.uri.queryParameters['id'];
+        if (id == null) {
+          return const SymptomHistoryScreen();
+        }
+        return EditSymptomScreen(symptomId: id);
+      },
     ),
   ],
 );
