@@ -8,6 +8,8 @@ import 'package:sparkle_lite/shared/widgets/primary_button.dart';
 
 
 /// Onboarding screen shown after login if user hasn't completed onboarding yet
+/// This screen provides a multi-page introduction to the app's features and benefits. It uses a PageView to allow users to swipe through different onboarding pages, each highlighting a key aspect of the app. The final page includes a "Get Started" button that, when pressed, marks onboarding as complete in the AuthProvider and navigates the user to the health profile setup screen.
+///   The onboarding process is designed to be engaging and informative, helping users understand the value of the app and encouraging them to complete their profile for a personalized experience. The UI includes icons, titles, and descriptions for each onboarding page, as well as visual indicators of the current page in the form of dots at the bottom of the screen.
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 

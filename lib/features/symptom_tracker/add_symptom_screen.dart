@@ -7,6 +7,10 @@ import 'package:sparkle_lite/providers/symptom_provider.dart';
 import 'package:sparkle_lite/shared/widgets/primary_button.dart';
 import 'package:sparkle_lite/shared/widgets/form_text_field.dart';
 
+/// Screen for adding a new symptom log entry. This screen includes a form with fields for date, period status, flow level, pain level, mood, symptoms, and notes. It uses various input widgets like date pickers, sliders, chips, and text fields to create an intuitive and engaging UI for logging symptoms. The screen also includes validation to ensure that required fields are filled out correctly before allowing the user to save the symptom log. When the user saves the log, it interacts with the SymptomProvider to add the new entry to the database and provides feedback on the success of the operation.
+///   The design of the AddSymptomScreen focuses on ease of use and visual appeal, with clear labels, icons, and a consistent color scheme that aligns with the overall app design. The screen also includes loading indicators and error handling to enhance the user experience during the save operation. Overall, this screen is a key part of the symptom tracking feature, allowing users to easily log their health data and gain insights over time.
+/// The AddSymptomScreen is designed to be flexible and extensible, allowing for future additions such as more symptom options, integration with wearable devices for automatic data logging, and enhanced AI insights based on the logged symptoms. The screen also emphasizes user privacy and data security, ensuring that all logged information is stored securely and handled with care.
+
 class AddSymptomScreen extends ConsumerStatefulWidget {
   const AddSymptomScreen({super.key});
 

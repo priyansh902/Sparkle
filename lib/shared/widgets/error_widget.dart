@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 
 /// A simple widget to display error messages in a user-friendly way.
+/// This widget shows an error icon, the error message, and an optional retry button if a callback is provided. It is designed to be used across the app to display errors in a consistent and visually appealing manner. The error message is centered on the screen with appropriate padding, and the retry button is styled to match the app's color scheme. This widget helps to improve the user experience by providing clear feedback when something goes wrong and offering a way to try again if applicable.
+/// The ErrorDisplayWidget is flexible and can be used in various contexts by simply passing the error message and an optional retry callback. It is a crucial part of the app's error handling strategy, ensuring that users are informed about issues in a clear and constructive way, while also providing an opportunity to recover from errors without frustration.
 class ErrorDisplayWidget extends StatelessWidget {
   final String error;
   final VoidCallback? onRetry;

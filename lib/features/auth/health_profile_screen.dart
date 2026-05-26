@@ -7,6 +7,8 @@ import 'package:sparkle_lite/providers/auth_provider.dart';
 import 'package:sparkle_lite/shared/widgets/primary_button.dart';
 
 /// Screen for users to input their health profile information during onboarding. This helps personalize the app experience and AI insights.
+/// The screen includes fields for age range, life stage, menstrual cycle status, known conditions, and medications. It uses ChoiceChips and FilterChips for selection, providing an intuitive and engaging UI.
+/// The screen also includes validation to ensure required fields are filled out before allowing the user to complete
 class HealthProfileScreen extends ConsumerStatefulWidget {
   const HealthProfileScreen({super.key});
 

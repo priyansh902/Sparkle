@@ -2,6 +2,9 @@
 import 'package:sparkle_lite/Data/models/user_model.dart';
 
 /// Abstract interface for authentication operations
+/// This allows for different implementations (e.g., Firebase, mock) without changing the app logic
+/// TODO: Define specific exceptions for different error cases (e.g., invalid credentials, network error)
+/// TODO: Add methods for password reset, email verification, and social login if needed
 abstract class AuthInterface {
   Future<AuthResult> login({
     required String email,

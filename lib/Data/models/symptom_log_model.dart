@@ -5,6 +5,8 @@ enum FlowLevel { none, light, medium, heavy }
 enum Mood { calm, anxious, tired, irritable, happy, sad }
 
 /// SymptomLog model representing a single symptom entry
+/// This model includes details about the user's symptoms on a particular day, such as period status, flow level, pain level, mood, and any additional symptoms or notes.
+/// The model is designed to be flexible and extensible, allowing for future additions of new fields
 class SymptomLog extends Equatable {
   final String id;
   final String userId;

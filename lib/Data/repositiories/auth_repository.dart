@@ -5,6 +5,7 @@ import 'package:sparkle_lite/Data/models/user_model.dart';
 
 
 /// Repository that abstracts authentication logic and interacts with the AuthInterface.
+/// This allows for different implementations of authentication (e.g., Firebase, mock) without changing the app logic.
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final authService = MockAuthService();
   return AuthRepository(authService: authService);

@@ -8,6 +8,9 @@ import 'package:sparkle_lite/shared/widgets/form_text_field.dart';
 
 
 /// Screen for editing an existing symptom log entry
+/// This screen allows users to modify the details of a previously logged symptom entry. It pre-populates the form fields with the existing data, allowing users to update the date, period status, flow level, pain level, mood, symptoms, and notes. The screen includes validation to ensure that required fields are filled out correctly before allowing the user to save the changes. When the user saves the updated log, it interacts with the SymptomProvider to update the entry in the database and provides feedback on the success of the operation.
+/// The design of the EditSymptomScreen is consistent with the AddSymptomScreen, maintaining a cohesive user experience. It includes loading indicators and error handling to enhance the user experience during the update operation. Overall, this screen is an essential part of the symptom tracking feature, allowing users to keep their health data accurate and up-to-date as they gain new insights or recall additional details about their symptoms.
+/// The EditSymptomScreen is designed to be flexible and extensible, allowing for future enhancements such as more symptom options, integration with wearable devices for automatic data logging, and enhanced AI insights based on the logged symptoms. The screen also emphasizes user privacy and data security, ensuring that all logged information is stored securely and handled with care.
 class EditSymptomScreen extends ConsumerStatefulWidget {
   const EditSymptomScreen({super.key, required this.symptomId});
   final String symptomId;

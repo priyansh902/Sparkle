@@ -7,6 +7,9 @@ import 'package:sparkle_lite/providers/symptom_provider.dart';
 import 'package:sparkle_lite/shared/widgets/empty_state_widget.dart';
 import 'package:sparkle_lite/shared/widgets/loading_widget.dart';
 
+/// SymptomHistoryScreen displays a list of all logged symptoms with options to view details, edit, or delete each entry. It also includes a button to add new symptom logs and handles empty states and loading states gracefully.
+/// The screen uses a ListView to display symptom entries in a card format, showing key details like date, pain level, period status, and symptoms. Each card is tappable, allowing users to view more details or edit the entry. The screen also includes a Dismissible widget for easy deletion of entries with confirmation dialogs to prevent accidental deletions. The UI is designed to be clean and user-friendly, with clear calls to action and feedback for user interactions.
+/// The SymptomHistoryScreen interacts with the SymptomProvider to fetch and manage symptom data, ensuring that the UI stays in sync with the underlying data state. It also includes error handling to display appropriate messages if there are issues loading or managing symptom logs. Overall, this screen is a crucial part of the symptom tracking feature, providing users with a comprehensive view of their health data and empowering them to take control of their health journey.
 class SymptomHistoryScreen extends ConsumerWidget {
   const SymptomHistoryScreen({super.key});
 

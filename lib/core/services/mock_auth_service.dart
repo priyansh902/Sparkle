@@ -4,6 +4,10 @@ import 'package:sparkle_lite/core/constants/app_constants.dart';
 import 'package:sparkle_lite/core/interfaces/auth_interface.dart';
 
 /// A mock authentication service for testing and development purposes.
+/// This simulates user login, signup, and session management without connecting to a real backend.
+/// It uses in-memory storage for user data and SharedPreferences for session persistence.
+/// TODO: Implement more robust error handling and validation logic.
+/// TODO: Add support for password reset and email verification in the future.
 class MockAuthService implements AuthInterface {
   // Mock user storage (in-memory for demo)
   final Map<String, Map<String, dynamic>> _mockUsers = {};

@@ -2,6 +2,8 @@ import 'package:equatable/equatable.dart';
 
 
 /// Represents a user in the Sparkle app, with all relevant profile information.
+/// This model includes basic user details such as email and name, as well as optional profile information like nickname, age range, life stage, cycle status, health conditions, medications, and privacy settings.
+/// The model is designed to be flexible and extensible, allowing for future additions of new fields
 enum LifeStage {
   generalWellness,
   periodTracking,

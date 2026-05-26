@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sparkle_lite/Data/models/symptom_log_model.dart';
 import 'package:sparkle_lite/core/constants/app_constants.dart';
+import 'package:sparkle_lite/Data/models/health_record_model.dart';
+import 'package:sparkle_lite/Data/models/symptom_log_model.dart';
 import 'package:sparkle_lite/providers/auth_provider.dart';
+import 'package:sparkle_lite/providers/record_provider.dart';
 import 'package:sparkle_lite/providers/symptom_provider.dart';
 import 'package:sparkle_lite/shared/widgets/empty_state_widget.dart';
+
+/// Main dashboard screen showing greeting, quick actions, recent symptoms, and recent records
+/// The dashboard serves as the central hub for users to access key features and view a summary of their health data. It includes a personalized greeting, quick action buttons for logging symptoms and uploading records, and sections for recent symptoms and health records. Each section provides a snapshot of the most recent entries, with options to view the full history. The dashboard also includes a "Coming Soon" section to tease upcoming features like AI insights, and a privacy reminder to reassure users about data security. The UI is designed to be clean, engaging, and easy to navigate, encouraging users to interact with their health data regularly.
+/// The dashboard also includes a bottom navigation bar for quick access to the home screen, symptom history, records list, and user profile. The logout button in the app bar allows users to easily sign out of their account and return to the welcome screen. Overall, the dashboard is designed to provide a welcoming and informative experience that encourages users to stay engaged with their health journey.
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -14,6 +20,7 @@ class DashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
     final symptomState = ref.watch(symptomProvider);
+    final recordState = ref.watch(recordProvider);
     final user = authState.user;
     
     return Scaffold(
@@ -35,7 +42,10 @@ class DashboardScreen extends ConsumerWidget {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          await ref.read(symptomProvider.notifier).loadSymptoms();
+          await Future.wait([
+            ref.read(symptomProvider.notifier).loadSymptoms(),
+            ref.read(recordProvider.notifier).loadRecords(),
+          ]);
         },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -45,7 +55,7 @@ class DashboardScreen extends ConsumerWidget {
             children: [
               // Greeting
               Text(
-                'Hello, ${user?.name ?? "User"}! Welcome Lady Sparkle',
+                'Hello, ${user?.name ?? "User"}! Welcome Lady Sparkle ✨',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -83,9 +93,31 @@ class DashboardScreen extends ConsumerWidget {
                   Expanded(
                     child: _buildQuickAction(
                       context,
+                      'Upload Record',
+                      Icons.cloud_upload_outlined,
+                      () => context.push(AppConstants.routeUploadRecord),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildQuickAction(
+                      context,
                       'View History',
                       Icons.history,
                       () => context.push(AppConstants.routeSymptomHistory),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildQuickAction(
+                      context,
+                      'View Records',
+                      Icons.folder_outlined,
+                      () => context.push(AppConstants.routeRecordsList),
                     ),
                   ),
                 ],
@@ -105,6 +137,19 @@ class DashboardScreen extends ConsumerWidget {
               
               const SizedBox(height: 24),
               
+              // Recent Health Records
+              const Text(
+                'Recent Health Records',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18,
+                ),
+              ),
+              const SizedBox(height: 12),
+              _buildRecentRecordsSection(context, ref, recordState),
+              
+              const SizedBox(height: 24),
+              
               // Coming Soon Section
               const Text(
                 'Coming Soon',
@@ -114,13 +159,6 @@ class DashboardScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              _buildComingSoonCard(
-                context,
-                'Health Records',
-                'Upload and manage medical reports',
-                Icons.cloud_upload_outlined,
-              ),
-              const SizedBox(height: 16),
               _buildComingSoonCard(
                 context,
                 'AI Insights',
@@ -178,6 +216,8 @@ class DashboardScreen extends ConsumerWidget {
         onTap: (index) {
           if (index == 1) {
             context.push(AppConstants.routeSymptomHistory);
+          } else if (index == 2) {
+            context.push(AppConstants.routeRecordsList);
           }
         },
       ),
@@ -235,12 +275,12 @@ class DashboardScreen extends ConsumerWidget {
     
     return Column(
       children: [
-        ...state.recentSymptoms.map((symptom) => _buildRecentSymptomTile(context, symptom)).toList(),
+        ...state.recentSymptoms.map((symptom) => _buildRecentSymptomTile(context, symptom)),
         TextButton(
           onPressed: () {
             context.push(AppConstants.routeSymptomHistory);
           },
-          child: const Text('View All'),
+          child: const Text('View All Symptoms'),
         ),
       ],
     );
@@ -285,6 +325,72 @@ class DashboardScreen extends ConsumerWidget {
         ),
         onTap: () {
           context.push('${AppConstants.routeEditSymptom}?id=${symptom.id}');
+        },
+      ),
+    );
+  }
+  
+  Widget _buildRecentRecordsSection(BuildContext context, WidgetRef ref, RecordState state) {
+    if (state.isLoading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+    
+    if (state.recentRecords.isEmpty) {
+      return EmptyStateWidget(
+        title: 'No records yet',
+        message: 'Upload health records to keep them organized',
+        buttonText: 'Upload Record',
+        onButtonPressed: () {
+          context.push(AppConstants.routeUploadRecord);
+        },
+        icon: Icons.folder_outlined,
+      );
+    }
+    
+    return Column(
+      children: [
+        ...state.recentRecords.map((record) => _buildRecentRecordTile(context, record)),
+        TextButton(
+          onPressed: () {
+            context.push(AppConstants.routeRecordsList);
+          },
+          child: const Text('View All Records'),
+        ),
+      ],
+    );
+  }
+  
+  Widget _buildRecentRecordTile(BuildContext context, HealthRecord record) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: const Color(0xFF7B61FF).withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(record.recordType.icon, color: const Color(0xFF7B61FF), size: 20),
+        ),
+        title: Text(
+          record.title,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Text(
+          '${record.recordType.displayName} • ${_formatDate(record.recordDate)}',
+          style: TextStyle(color: Colors.grey[600], fontSize: 12),
+        ),
+        trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+        onTap: () {
+          context.push('${AppConstants.routeRecordDetail}?id=${record.id}');
         },
       ),
     );

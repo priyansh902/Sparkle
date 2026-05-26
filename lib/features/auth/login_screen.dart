@@ -9,6 +9,8 @@ import 'package:sparkle_lite/shared/widgets/primary_button.dart';
 
 
 /// Login screen for existing users
+/// This screen allows users to enter their email and password to log in to their account. It includes form validation, error handling, and a link to the signup screen for new users. The login process interacts with the AuthProvider to manage authentication state and navigate to the appropriate screen based on whether onboarding is needed.
+/// The UI is designed to be clean and user-friendly, with clear input fields, error messages, and a prominent login button. It also includes a back button to return to the welcome screen.
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 

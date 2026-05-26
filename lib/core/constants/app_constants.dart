@@ -1,4 +1,7 @@
-
+/// This file defines all the constant values used throughout the app, such as route names, API keys, and validation rules.
+/// Centralizing these values helps maintain consistency and makes it easier to update them in the future.
+/// TODO: Add more constants as needed, such as error messages, default values, and UI strings.
+/// TODO: Consider organizing constants into separate classes or files if the list grows too large.
 class AppConstants {
 
   /// App Information
@@ -12,6 +15,7 @@ class AppConstants {
   static const String keyUserName = 'user_name';
   static const String keyOnboardingCompleted = 'onboarding_completed';
   static const String keySymptoms = 'symptoms';
+  static const String keyHealthRecords = 'health_records';
 
   /// Validation Constants
   static const int minPasswordLength = 6;
@@ -31,5 +35,8 @@ class AppConstants {
   static const String routeEditSymptom = '/edit-symptom';
 
 /// Health Record Routes 
+  static const String routeRecordsList = '/records';
+  static const String routeUploadRecord = '/upload-record';
+  static const String routeRecordDetail = '/record-detail';
 
 }

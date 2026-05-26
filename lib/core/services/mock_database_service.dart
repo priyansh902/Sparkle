@@ -1,14 +1,21 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sparkle_lite/Data/models/health_record_model.dart';
 import 'package:sparkle_lite/Data/models/symptom_log_model.dart';
 import 'package:sparkle_lite/core/constants/app_constants.dart';
 import 'package:sparkle_lite/core/interfaces/database_interface.dart';
 
-
+/// A mock database service for testing and development purposes.
+/// This simulates database operations using SharedPreferences for persistence and in-memory caching for performance.
+/// It provides methods for managing symptom logs and health records, including CRUD operations and querying by date range and type.
+/// TODO: Implement more robust error handling and validation logic.
+/// TODO: Add support for batch operations and more complex queries in the future.
 class MockDatabaseService implements DatabaseInterface {
   // In-memory cache for performance
   final Map<String, List<SymptomLog>> _symptomCache = {};
+  final Map<String, List<HealthRecord>> _recordCache = {};
   
+  /// Symptom Methods
   @override
   Future<List<SymptomLog>> getSymptoms(String userId) async {
     // Check cache first
@@ -104,5 +111,90 @@ class MockDatabaseService implements DatabaseInterface {
     final prefs = await SharedPreferences.getInstance();
     final jsonList = symptoms.map((s) => s.toJson()).toList();
     await prefs.setString('${AppConstants.keySymptoms}_$userId', json.encode(jsonList));
+  }
+
+  /// Health Record Methods
+  @override
+  Future<List<HealthRecord>> getHealthRecords(String userId) async {
+    // Check cache first
+    if (_recordCache.containsKey(userId)) {
+      return _recordCache[userId]!;
+    }
+    
+    // Load from storage
+    final prefs = await SharedPreferences.getInstance();
+    final String? recordsJson = prefs.getString('${AppConstants.keyHealthRecords}_$userId');
+    
+    if (recordsJson == null) {
+      return [];
+    }
+    
+    final List<dynamic> decoded = json.decode(recordsJson);
+    final records = decoded.map((item) => HealthRecord.fromJson(item)).toList();
+    
+    // Sort by date (newest first)
+    records.sort((a, b) => b.recordDate.compareTo(a.recordDate));
+    
+    // Update cache
+    _recordCache[userId] = records;
+    
+    return records;
+  }
+  
+  @override
+  Future<HealthRecord?> getHealthRecordById(String id, String userId) async {
+    final records = await getHealthRecords(userId);
+    try {
+      return records.firstWhere((r) => r.id == id);
+    } catch (e) {
+      return null;
+    }
+  }
+  
+  @override
+  Future<void> saveHealthRecord(HealthRecord record, String userId) async {
+    final records = await getHealthRecords(userId);
+    final updatedRecords = [record, ...records];
+    await _saveRecordsToStorage(userId, updatedRecords);
+    _recordCache[userId] = updatedRecords;
+  }
+  
+  @override
+  Future<void> updateHealthRecord(HealthRecord record, String userId) async {
+    final records = await getHealthRecords(userId);
+    final index = records.indexWhere((r) => r.id == record.id);
+    
+    if (index != -1) {
+      records[index] = record;
+      await _saveRecordsToStorage(userId, records);
+      _recordCache[userId] = records;
+    }
+  }
+  
+  @override
+  Future<void> deleteHealthRecord(String id, String userId) async {
+    final records = await getHealthRecords(userId);
+    final updatedRecords = records.where((r) => r.id != id).toList();
+    await _saveRecordsToStorage(userId, updatedRecords);
+    _recordCache[userId] = updatedRecords;
+  }
+  
+  @override
+  Future<List<HealthRecord>> getRecentHealthRecords(String userId, {int limit = 3}) async {
+    final records = await getHealthRecords(userId);
+    if (records.length <= limit) return records;
+    return records.sublist(0, limit);
+  }
+  
+  @override
+  Future<List<HealthRecord>> getHealthRecordsByType(String userId, RecordType type) async {
+    final records = await getHealthRecords(userId);
+    return records.where((r) => r.recordType == type).toList();
+  }
+  
+  Future<void> _saveRecordsToStorage(String userId, List<HealthRecord> records) async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonList = records.map((r) => r.toJson()).toList();
+    await prefs.setString('${AppConstants.keyHealthRecords}_$userId', json.encode(jsonList));
   }
 }

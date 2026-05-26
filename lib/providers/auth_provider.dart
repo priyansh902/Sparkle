@@ -2,7 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sparkle_lite/Data/models/user_model.dart';
 import 'package:sparkle_lite/Data/repositiories/auth_repository.dart';
 
-// State definition
+/// State definition
+/// AuthState represents the current authentication status of the user, including loading state, authentication status, user information, and any error messages. It provides a copyWith method for easy state updates and an initial factory constructor for the default state.
 class AuthState {
   final bool isLoading;
   final bool isAuthenticated;

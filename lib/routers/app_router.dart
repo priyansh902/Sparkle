@@ -1,6 +1,9 @@
 
 import 'package:go_router/go_router.dart';
 import 'package:sparkle_lite/core/constants/app_constants.dart';
+import 'package:sparkle_lite/features/health_records/record_detail_screen.dart';
+import 'package:sparkle_lite/features/health_records/records_list_screen.dart';
+import 'package:sparkle_lite/features/health_records/upload_record_screen.dart';
 import 'package:sparkle_lite/features/symptom_tracker/edit_symptom_screen.dart';
 import 'package:sparkle_lite/features/symptom_tracker/symptom_history_screen.dart';
 import 'package:sparkle_lite/features/symptom_tracker/add_symptom_screen.dart';
@@ -14,6 +17,10 @@ import 'route_guards.dart';
 
 
 /// Centralized router configuration using GoRouter
+/// This defines all the routes in the app and applies route guards for authentication and onboarding flow control.
+/// TODO: Add more routes as features are implemented
+/// TODO: Implement nested routes for symptom details and record details
+/// TODO: Add error handling for invalid routes and missing parameters
 final GoRouter appRouter = GoRouter(
   initialLocation: AppConstants.routeWelcome,
   redirect: (context, state) async {
@@ -71,5 +78,26 @@ final GoRouter appRouter = GoRouter(
         return EditSymptomScreen(symptomId: id);
       },
     ),
+    GoRoute(
+  path: AppConstants.routeRecordsList,
+  name: 'records-list',
+  builder: (context, state) => const RecordsListScreen(),
+),
+GoRoute(
+  path: AppConstants.routeUploadRecord,
+  name: 'upload-record',
+  builder: (context, state) => const UploadRecordScreen(),
+),
+GoRoute(
+  path: '${AppConstants.routeRecordDetail}',
+  name: 'record-detail',
+  builder: (context, state) {
+    final id = state.uri.queryParameters['id'];
+    if (id == null) {
+      return const RecordsListScreen();
+    }
+    return RecordDetailScreen(recordId: id);
+  },
+),
   ],
 );

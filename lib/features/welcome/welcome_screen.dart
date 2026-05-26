@@ -5,6 +5,8 @@ import 'package:sparkle_lite/shared/widgets/primary_button.dart';
 
 
 /// Welcome screen shown to unauthenticated users
+/// This screen serves as the entry point for new users, providing a warm welcome and guiding them towards signing up or logging in. It features a clean and engaging design with a prominent logo, a welcoming title and subtitle, and clear calls to action for both new and existing users. The "Get Started" button directs new users to the signup screen, while the "Already have an account? Sign In" link takes existing users to the login screen. The screen also includes a privacy note at the bottom to reassure users about data security. Overall, the WelcomeScreen is designed to create a positive first impression and encourage users to take the next step in their health journey with Sparkle Lite.
+/// The WelcomeScreen is also designed to be responsive and visually appealing across different device sizes, ensuring a consistent user experience. The use of colors, typography, and spacing is carefully chosen to align with the overall branding of the app and create an inviting atmosphere for users as they begin their journey with Sparkle Lite.
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 

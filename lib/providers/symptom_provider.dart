@@ -3,7 +3,9 @@ import 'package:sparkle_lite/Data/repositiories/symptom_repository.dart';
 import 'package:sparkle_lite/Data/models/symptom_log_model.dart';
 import 'auth_provider.dart';
 
-// State definition
+/// State definition
+/// SymptomState represents the current state of symptom logs, including loading state, list of symptoms,
+/// recent symptoms, any error messages, and saving state. It provides a copyWith method for easy state updates and an initial factory constructor for the default state.
 class SymptomState {
   final bool isLoading;
   final List<SymptomLog> symptoms;

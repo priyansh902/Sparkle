@@ -8,6 +8,8 @@ import 'package:sparkle_lite/shared/widgets/primary_button.dart';
 
 
 /// SIGNUP SCREEN
+/// This screen allows users to create a new account by entering their name, email, and password. It includes form validation to ensure that all fields are filled out correctly, and it interacts with the AuthProvider to handle the signup process. If the signup is successful, the user is navigated to the onboarding screen to complete their profile setup.
+/// The UI is designed to be clean and user-friendly, with clear input fields, error messages, and a prominent signup button. It also includes a back button to return to the welcome screen and a link for users who already have an account to navigate to the login screen.
 class SignupScreen extends ConsumerStatefulWidget {
   const SignupScreen({super.key});
 
