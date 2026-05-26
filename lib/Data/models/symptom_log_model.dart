@@ -84,6 +84,7 @@ class SymptomLog extends Equatable {
       mood: Mood.calm,
       symptoms: [],
       createdAt: DateTime.now(),
+      
       updatedAt: DateTime.now(),
     );
   }
