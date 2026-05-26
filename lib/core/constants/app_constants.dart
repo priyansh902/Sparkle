@@ -39,4 +39,6 @@ class AppConstants {
   static const String routeUploadRecord = '/upload-record';
   static const String routeRecordDetail = '/record-detail';
 
+  ///time line and Ai Insight Routes
+
 }
