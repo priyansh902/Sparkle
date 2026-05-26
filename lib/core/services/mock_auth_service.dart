@@ -1,63 +1,193 @@
-
-
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sparkle_lite/Data/models/user_model.dart';
+import 'package:sparkle_lite/core/constants/app_constants.dart';
 import 'package:sparkle_lite/core/interfaces/auth_interface.dart';
 
-/// A mock implementation of the AuthInterface for testing purposes.
+/// A mock authentication service for testing and development purposes.
 class MockAuthService implements AuthInterface {
-
-  static const String _userIdKey = 'mock_user_id';
-  static const String _isLoggedInKey = 'is_logged_in';
-
-/// Logs in a user with the provided email and password.
-    @override
-    Future<({bool success, String? userId, String? error})> login({
-      required String email, 
-      required String password
-    }) async {
-      // Mock validation
-      if (email.isEmpty || password.isEmpty) {
-        return (success: false, userId: null, error: 'Email and password required');
-      }
-      
-      if (password.length < 6) {
-        return (success: false, userId: null, error: 'Password too short');
-      }
-      
-      // Mock success
-      const mockUserId = 'mock_user_123';
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_userIdKey, mockUserId);
-      await prefs.setBool(_isLoggedInKey, true);
-      
-      return (success: true, userId: mockUserId, error: null);
+  // Mock user storage (in-memory for demo)
+  final Map<String, Map<String, dynamic>> _mockUsers = {};
+  
+  MockAuthService() {
+    _initMockUser();
+  }
+  
+  void _initMockUser() {
+    _mockUsers['test@example.com'] = {
+      'password': 'password123',
+      'userId': 'mock_user_123',
+      'name': 'Sarah Johnson',
+    };
+  }
+  
+  @override
+  Future<AuthResult> login({
+    required String email,
+    required String password,
+  }) async {
+    // Validation
+    if (email.isEmpty) {
+      return AuthResult(success: false, error: 'Email is required');
     }
-    /// Signs up a new user with the provided email, password, and name.
-    @override
-    Future<({bool success, String? userId, String? error})> signup({
-      required String email,
-      required String password,
-      required String name,
-    }) async {
-      // Same as login for mock
-      return login(email: email, password: password);
+    if (password.isEmpty) {
+      return AuthResult(success: false, error: 'Password is required');
     }
-    /// Logs out the currently authenticated user.
-    @override
-    Future<void> logout() async {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove(_userIdKey);
-      await prefs.setBool(_isLoggedInKey, false);
+    if (password.length < AppConstants.minPasswordLength) {
+      return AuthResult(
+        success: false, 
+        error: 'Password must be at least ${AppConstants.minPasswordLength} characters'
+      );
     }
-    /// Checks if a user is currently logged in.
-    @override
-    Future<bool> isLoggedIn() async {
-      final prefs = await SharedPreferences.getInstance();
-      return prefs.getBool(_isLoggedInKey) ?? false;
+    
+    // Simulate network delay
+    await Future.delayed(const Duration(milliseconds: 800));
+    
+    // Check if user exists
+    final userData = _mockUsers[email.toLowerCase()];
+    if (userData == null) {
+      return AuthResult(success: false, error: 'User not found');
     }
-    /// Retrieves the current user's ID if logged in.
-    @override
-    String? getCurrentUserId() {
-      return 'mock_user_123';
+    
+    if (userData['password'] != password) {
+      return AuthResult(success: false, error: 'Invalid password');
     }
+    
+    // Save session
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(AppConstants.keyUserId, userData['userId']);
+    await prefs.setBool(AppConstants.keyIsLoggedIn, true);
+    await prefs.setString(AppConstants.keyUserEmail, email);
+    await prefs.setString(AppConstants.keyUserName, userData['name']);
+    
+    return AuthResult(
+      success: true,
+      userId: userData['userId'],
+      user: UserModel(
+        id: userData['userId'],
+        email: email,
+        name: userData['name'],
+        createdAt: DateTime.now(),
+      ),
+    );
+  }
+  
+  @override
+  Future<AuthResult> signup({
+    required String email,
+    required String password,
+    required String name,
+  }) async {
+    // Validation
+    if (email.isEmpty) {
+      return AuthResult(success: false, error: 'Email is required');
+    }
+    if (name.isEmpty) {
+      return AuthResult(success: false, error: 'Name is required');
+    }
+    if (password.isEmpty) {
+      return AuthResult(success: false, error: 'Password is required');
+    }
+    if (password.length < AppConstants.minPasswordLength) {
+      return AuthResult(
+        success: false, 
+        error: 'Password must be at least ${AppConstants.minPasswordLength} characters'
+      );
+    }
+    
+    // Email format validation
+    final emailRegex = RegExp(AppConstants.emailRegex);
+    if (!emailRegex.hasMatch(email)) {
+      return AuthResult(success: false, error: 'Enter a valid email address');
+    }
+    
+    await Future.delayed(const Duration(milliseconds: 800));
+    
+    // Check if user already exists
+    if (_mockUsers.containsKey(email.toLowerCase())) {
+      return AuthResult(success: false, error: 'Email already registered');
+    }
+    
+    // Create new user
+    final newUserId = 'user_${DateTime.now().millisecondsSinceEpoch}';
+    _mockUsers[email.toLowerCase()] = {
+      'password': password,
+      'userId': newUserId,
+      'name': name,
+    };
+    
+    // Save session
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(AppConstants.keyUserId, newUserId);
+    await prefs.setBool(AppConstants.keyIsLoggedIn, true);
+    await prefs.setString(AppConstants.keyUserEmail, email);
+    await prefs.setString(AppConstants.keyUserName, name);
+    
+    return AuthResult(
+      success: true,
+      userId: newUserId,
+      user: UserModel(
+        id: newUserId,
+        email: email,
+        name: name,
+        createdAt: DateTime.now(),
+      ),
+    );
+  }
+  
+  @override
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(AppConstants.keyUserId);
+    await prefs.setBool(AppConstants.keyIsLoggedIn, false);
+    await prefs.remove(AppConstants.keyUserEmail);
+    await prefs.remove(AppConstants.keyUserName);
+  }
+  
+  @override
+  Future<bool> isLoggedIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(AppConstants.keyIsLoggedIn) ?? false;
+  }
+  
+  @override
+  Future<bool> hasCompletedOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(AppConstants.keyOnboardingCompleted) ?? false;
+  }
+  
+  @override
+  Future<void> setOnboardingCompleted(bool completed) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(AppConstants.keyOnboardingCompleted, completed);
+  }
+  
+  @override
+  Future<String?> getCurrentUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(AppConstants.keyUserId);
+  }
+  
+  @override
+  Future<UserModel?> getCurrentUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString(AppConstants.keyUserId);
+    final email = prefs.getString(AppConstants.keyUserEmail);
+    final name = prefs.getString(AppConstants.keyUserName);
+    
+    if (userId == null || email == null) return null;
+    
+    return UserModel(
+      id: userId,
+      email: email,
+      name: name ?? '',
+      createdAt: DateTime.now(),
+    );
+  }
+  
+  @override
+  Future<void> saveUserProfile(UserModel user) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(AppConstants.keyUserName, user.name);
+    // In a real app, you'd save more profile data
+  }
 }
