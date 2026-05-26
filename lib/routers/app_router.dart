@@ -1,12 +1,15 @@
 
 import 'package:go_router/go_router.dart';
 import 'package:sparkle_lite/core/constants/app_constants.dart';
+import 'package:sparkle_lite/features/ai_insight/insight_input_screen.dart';
+import 'package:sparkle_lite/features/ai_insight/insight_result_screen.dart';
 import 'package:sparkle_lite/features/health_records/record_detail_screen.dart';
 import 'package:sparkle_lite/features/health_records/records_list_screen.dart';
 import 'package:sparkle_lite/features/health_records/upload_record_screen.dart';
 import 'package:sparkle_lite/features/symptom_tracker/edit_symptom_screen.dart';
 import 'package:sparkle_lite/features/symptom_tracker/symptom_history_screen.dart';
 import 'package:sparkle_lite/features/symptom_tracker/add_symptom_screen.dart';
+import 'package:sparkle_lite/features/timeline/timeline_screen.dart';
 import 'package:sparkle_lite/features/welcome/welcome_screen.dart';
 import 'package:sparkle_lite/features/auth/login_screen.dart';
 import 'package:sparkle_lite/features/auth/signup_screen.dart';
@@ -79,25 +82,40 @@ final GoRouter appRouter = GoRouter(
       },
     ),
     GoRoute(
-  path: AppConstants.routeRecordsList,
-  name: 'records-list',
-  builder: (context, state) => const RecordsListScreen(),
-),
-GoRoute(
-  path: AppConstants.routeUploadRecord,
-  name: 'upload-record',
-  builder: (context, state) => const UploadRecordScreen(),
-),
-GoRoute(
-  path: '${AppConstants.routeRecordDetail}',
-  name: 'record-detail',
-  builder: (context, state) {
-    final id = state.uri.queryParameters['id'];
-    if (id == null) {
-      return const RecordsListScreen();
-    }
-    return RecordDetailScreen(recordId: id);
-  },
-),
+    path: AppConstants.routeRecordsList,
+    name: 'records-list',
+    builder: (context, state) => const RecordsListScreen(),
+    ),
+    GoRoute(
+      path: AppConstants.routeUploadRecord,
+      name: 'upload-record',
+      builder: (context, state) => const UploadRecordScreen(),
+    ),
+    GoRoute(
+      path: '${AppConstants.routeRecordDetail}',
+      name: 'record-detail',
+      builder: (context, state) {
+        final id = state.uri.queryParameters['id'];
+        if (id == null) {
+          return const RecordsListScreen();
+        }
+        return RecordDetailScreen(recordId: id);
+      },
+    ),
+    GoRoute(
+      path: AppConstants.routeTimeline,
+      name: 'timeline',
+      builder: (context, state) => const TimelineScreen(),
+    ),
+    GoRoute(
+      path: AppConstants.routeAIInsightInput,
+      name: 'ai-insight-input',
+      builder: (context, state) => const InsightInputScreen(),
+    ),
+    GoRoute(
+      path: AppConstants.routeAIInsightResult,
+      name: 'ai-insight-result',
+      builder: (context, state) => const InsightResultScreen(),
+    ),
   ],
 );

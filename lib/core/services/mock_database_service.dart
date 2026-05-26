@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sparkle_lite/Data/models/ai_insight_model.dart';
 import 'package:sparkle_lite/Data/models/health_record_model.dart';
 import 'package:sparkle_lite/Data/models/symptom_log_model.dart';
 import 'package:sparkle_lite/core/constants/app_constants.dart';
@@ -14,6 +15,7 @@ class MockDatabaseService implements DatabaseInterface {
   // In-memory cache for performance
   final Map<String, List<SymptomLog>> _symptomCache = {};
   final Map<String, List<HealthRecord>> _recordCache = {};
+  final Map<String, List<AIInsight>> _insightCache = {};
   
   /// Symptom Methods
   @override
@@ -197,4 +199,57 @@ class MockDatabaseService implements DatabaseInterface {
     final jsonList = records.map((r) => r.toJson()).toList();
     await prefs.setString('${AppConstants.keyHealthRecords}_$userId', json.encode(jsonList));
   }
+
+  /// AI Insight Methods
+
+
+  @override
+  Future<List<AIInsight>> getAIInsights(String userId) async {
+    // Check cache first
+    if (_insightCache.containsKey(userId)) {
+      return _insightCache[userId]!;
+    }
+    
+    // Load from storage
+    final prefs = await SharedPreferences.getInstance();
+    final String? insightsJson = prefs.getString('${AppConstants.keyAIInsights}_$userId');
+    
+    if (insightsJson == null) {
+      return [];
+    }
+    
+    final List<dynamic> decoded = json.decode(insightsJson);
+    final insights = decoded.map((item) => AIInsight.fromJson(item)).toList();
+    
+    // Sort by date (newest first)
+    insights.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    
+    // Update cache
+    _insightCache[userId] = insights;
+    
+    return insights;
+  }
+
+  @override
+  Future<void> saveAIInsight(AIInsight insight, String userId) async {
+    final insights = await getAIInsights(userId);
+    final updatedInsights = [insight, ...insights];
+    await _saveInsightsToStorage(userId, updatedInsights);
+    _insightCache[userId] = updatedInsights;
+  }
+
+  @override
+  Future<void> deleteAIInsight(String id, String userId) async {
+    final insights = await getAIInsights(userId);
+    final updatedInsights = insights.where((i) => i.id != id).toList();
+    await _saveInsightsToStorage(userId, updatedInsights);
+    _insightCache[userId] = updatedInsights;
+  }
+
+  Future<void> _saveInsightsToStorage(String userId, List<AIInsight> insights) async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonList = insights.map((i) => i.toJson()).toList();
+    await prefs.setString('${AppConstants.keyAIInsights}_$userId', json.encode(jsonList));
+  }
+
 }

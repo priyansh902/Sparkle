@@ -16,6 +16,7 @@ class AppConstants {
   static const String keyOnboardingCompleted = 'onboarding_completed';
   static const String keySymptoms = 'symptoms';
   static const String keyHealthRecords = 'health_records';
+  static const String keyAIInsights = 'ai_insights';
 
   /// Validation Constants
   static const int minPasswordLength = 6;
@@ -40,5 +41,8 @@ class AppConstants {
   static const String routeRecordDetail = '/record-detail';
 
   ///time line and Ai Insight Routes
+  static const String routeTimeline = '/timeline';
+  static const String routeAIInsightInput = '/ai-insight-input';
+  static const String routeAIInsightResult = '/ai-insight-result';
 
 }

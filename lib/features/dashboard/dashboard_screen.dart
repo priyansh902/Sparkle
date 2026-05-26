@@ -9,9 +9,16 @@ import 'package:sparkle_lite/providers/record_provider.dart';
 import 'package:sparkle_lite/providers/symptom_provider.dart';
 import 'package:sparkle_lite/shared/widgets/empty_state_widget.dart';
 
+
 /// Main dashboard screen showing greeting, quick actions, recent symptoms, and recent records
-/// The dashboard serves as the central hub for users to access key features and view a summary of their health data. It includes a personalized greeting, quick action buttons for logging symptoms and uploading records, and sections for recent symptoms and health records. Each section provides a snapshot of the most recent entries, with options to view the full history. The dashboard also includes a "Coming Soon" section to tease upcoming features like AI insights, and a privacy reminder to reassure users about data security. The UI is designed to be clean, engaging, and easy to navigate, encouraging users to interact with their health data regularly.
-/// The dashboard also includes a bottom navigation bar for quick access to the home screen, symptom history, records list, and user profile. The logout button in the app bar allows users to easily sign out of their account and return to the welcome screen. Overall, the dashboard is designed to provide a welcoming and informative experience that encourages users to stay engaged with their health journey.
+/// The dashboard serves as the central hub for users to access key features and view a summary of their health data. 
+/// It includes a personalized greeting, quick action buttons for logging symptoms and uploading records, and sections 
+/// for recent symptoms and health records. Each section provides a snapshot of the most recent entries, with options 
+/// to view the full history. The dashboard also includes a "Coming Soon" section to tease upcoming features like AI insights, 
+/// and a privacy reminder to reassure users about data security. The UI is designed to be clean, engaging, and easy to navigate, 
+/// encouraging users to interact with their health data regularly.
+/// The dashboard also includes a bottom navigation bar for quick access to the home screen, symptom history, records list, 
+/// and user profile. The logout button in the app bar allows users to easily sign out of their account and return to the welcome screen.
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -31,22 +38,12 @@ class DashboardScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await ref.read(authProvider.notifier).logout();
-              if (context.mounted) {
-                context.go(AppConstants.routeWelcome);
-              }
-            },
+            onPressed: () => _logout(ref, context),
           ),
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () async {
-          await Future.wait([
-            ref.read(symptomProvider.notifier).loadSymptoms(),
-            ref.read(recordProvider.notifier).loadRecords(),
-          ]);
-        },
+        onRefresh: () => _refreshData(ref),
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(24),
@@ -106,18 +103,18 @@ class DashboardScreen extends ConsumerWidget {
                   Expanded(
                     child: _buildQuickAction(
                       context,
-                      'View History',
-                      Icons.history,
-                      () => context.push(AppConstants.routeSymptomHistory),
+                      'AI Insight',
+                      Icons.psychology_outlined,
+                      () => context.push(AppConstants.routeAIInsightInput),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: _buildQuickAction(
                       context,
-                      'View Records',
-                      Icons.folder_outlined,
-                      () => context.push(AppConstants.routeRecordsList),
+                      'Timeline',
+                      Icons.timeline,
+                      () => context.push(AppConstants.routeTimeline),
                     ),
                   ),
                 ],
@@ -152,7 +149,7 @@ class DashboardScreen extends ConsumerWidget {
               
               // Coming Soon Section
               const Text(
-                'Coming Soon',
+                'More Features',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 18,
@@ -161,9 +158,16 @@ class DashboardScreen extends ConsumerWidget {
               const SizedBox(height: 12),
               _buildComingSoonCard(
                 context,
-                'AI Insights',
-                'Get smart health summaries',
-                Icons.psychology_outlined,
+                'Doctor Visit Summary',
+                'Prepare for your next appointment',
+                Icons.medical_services_outlined,
+              ),
+              const SizedBox(height: 12),
+              _buildComingSoonCard(
+                context,
+                'Privacy Settings',
+                'Control your data preferences',
+                Icons.privacy_tip_outlined,
               ),
               
               const SizedBox(height: 24),
@@ -213,16 +217,36 @@ class DashboardScreen extends ConsumerWidget {
             label: 'Profile',
           ),
         ],
-        onTap: (index) {
-          if (index == 1) {
-            context.push(AppConstants.routeSymptomHistory);
-          } else if (index == 2) {
-            context.push(AppConstants.routeRecordsList);
-          }
-        },
+        onTap: (index) => _onBottomNavTap(context, index),
       ),
     );
   }
+  
+  // PRIVATE METHODS
+  
+  void _logout(WidgetRef ref, BuildContext context) async {
+    await ref.read(authProvider.notifier).logout();
+    if (context.mounted) {
+      context.go(AppConstants.routeWelcome);
+    }
+  }
+  
+  Future<void> _refreshData(WidgetRef ref) async {
+    await Future.wait([
+      ref.read(symptomProvider.notifier).loadSymptoms(),
+      ref.read(recordProvider.notifier).loadRecords(),
+    ]);
+  }
+  
+  void _onBottomNavTap(BuildContext context, int index) {
+    if (index == 1) {
+      context.push(AppConstants.routeSymptomHistory);
+    } else if (index == 2) {
+      context.push(AppConstants.routeRecordsList);
+    }
+  }
+  
+  //UI BUILDERS
   
   Widget _buildQuickAction(BuildContext context, String title, IconData icon, VoidCallback onTap) {
     return InkWell(
@@ -396,17 +420,6 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
   
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final yesterday = today.subtract(const Duration(days: 1));
-    final dateOnly = DateTime(date.year, date.month, date.day);
-    
-    if (dateOnly == today) return 'Today';
-    if (dateOnly == yesterday) return 'Yesterday';
-    return '${date.month}/${date.day}/${date.year}';
-  }
-  
   Widget _buildComingSoonCard(BuildContext context, String title, String subtitle, IconData icon) {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -459,5 +472,18 @@ class DashboardScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+  
+  //HELPER METHODS
+  
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+    final dateOnly = DateTime(date.year, date.month, date.day);
+    
+    if (dateOnly == today) return 'Today';
+    if (dateOnly == yesterday) return 'Yesterday';
+    return '${date.month}/${date.day}/${date.year}';
   }
 }

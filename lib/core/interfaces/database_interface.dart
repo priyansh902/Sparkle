@@ -1,3 +1,4 @@
+import 'package:sparkle_lite/Data/models/ai_insight_model.dart';
 import 'package:sparkle_lite/Data/models/health_record_model.dart';
 import 'package:sparkle_lite/Data/models/symptom_log_model.dart';
 
@@ -39,5 +40,11 @@ abstract class DatabaseInterface {
   Future<List<HealthRecord>> getRecentHealthRecords(String userId, {int limit});
 
   Future<List<HealthRecord>> getHealthRecordsByType(String userId, RecordType type);
+
+  Future<List<AIInsight>> getAIInsights(String userId);
+
+  Future<void> saveAIInsight(AIInsight insight, String userId);
+  
+  Future<void> deleteAIInsight(String id, String userId);
   
 }
