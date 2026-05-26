@@ -30,4 +30,6 @@ class AppConstants {
   static const String routeSymptomHistory = '/symptom-history';
   static const String routeEditSymptom = '/edit-symptom';
 
+/// Health Record Routes 
+
 }
