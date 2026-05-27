@@ -56,5 +56,9 @@ class AppConstants {
   static const String routeFamilyList = '/family-list';
   static const String routeAddFamilyMember = '/add-family-member';
   
+  // Responsive Design Breakpoints
+  static const double breakpointMobile = 600;
+  static const double breakpointTablet = 1200;
+  static const double breakpointDesktop = 1201;
 
 }
