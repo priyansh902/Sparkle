@@ -5,7 +5,8 @@ plugins {
 }
 
 android {
-    namespace = "com.priyanshuKumar.sparkle_lite"
+    namespace = "com.example.sparkle_lite"
+    ndkVersion = "27.0.12077973"
     compileSdk = 34
     ndkVersion = flutter.ndkVersion
 
@@ -19,7 +20,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.priyanshuKumar.sparkle_lite"
+        applicationId = "com.example.sparkle_lite"
         minSdk = 21
         targetSdk = 34
         versionCode = 1
