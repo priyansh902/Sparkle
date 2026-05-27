@@ -60,7 +60,7 @@ class SummaryNotifier extends StateNotifier<SummaryState> {
     state = state.copyWith(isLoading: true, error: null);
     
     try {
-      final summaries = await _repository.getDoctorSummaries(_userId);
+      final summaries = await _repository.getDoctorSummaries(_userId!);
       state = state.copyWith(
         isLoading: false,
         summaries: summaries,
@@ -108,7 +108,7 @@ class SummaryNotifier extends StateNotifier<SummaryState> {
     try {
       final summary = DoctorSummary(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
-        userId: _userId,
+        userId: _userId!,
         summaryText: summaryData['summaryText'],
         questionsForDoctor: List<String>.from(summaryData['questionsForDoctor']),
         recentSymptoms: List<String>.from(summaryData['recentSymptoms']),
@@ -119,7 +119,7 @@ class SummaryNotifier extends StateNotifier<SummaryState> {
         createdAt: DateTime.now(),
       );
       
-      await _repository.saveDoctorSummary(summary, _userId);
+      await _repository.saveDoctorSummary(summary, _userId!);
       await loadSummaries();
       
       state = state.copyWith(currentSummary: null);

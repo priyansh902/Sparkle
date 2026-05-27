@@ -21,7 +21,7 @@ class SettingsNotifier extends StateNotifier<PrivacySettings> {
   Future<PrivacySettings> loadSettings() async {
     if (_userId == null) return const PrivacySettings();
     
-    final settings = await _repository.getSettings(_userId);
+    final settings = await _repository.getSettings(_userId!);
     state = settings;
     return settings;
   }
@@ -43,7 +43,7 @@ class SettingsNotifier extends StateNotifier<PrivacySettings> {
       allowAnalytics: allowAnalytics,
     );
     
-    await _repository.saveSettings(newSettings, _userId);
+    await _repository.saveSettings(newSettings, _userId!);
     state = newSettings;
   }
 }

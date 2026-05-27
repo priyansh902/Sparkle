@@ -57,8 +57,8 @@ class SymptomNotifier extends StateNotifier<SymptomState> {
     state = state.copyWith(isLoading: true, error: null);
     
     try {
-      final symptoms = await _repository.getSymptoms(_userId);
-      final recentSymptoms = await _repository.getRecentSymptoms(_userId);
+      final symptoms = await _repository.getSymptoms(_userId!);
+      final recentSymptoms = await _repository.getRecentSymptoms(_userId!);
       
       state = state.copyWith(
         isLoading: false,
@@ -79,7 +79,7 @@ class SymptomNotifier extends StateNotifier<SymptomState> {
     state = state.copyWith(isSaving: true, error: null);
     
     try {
-      await _repository.saveSymptom(symptom, _userId);
+      await _repository.saveSymptom(symptom, _userId!);
       await loadSymptoms(); // Reload to get updated list
       state = state.copyWith(isSaving: false);
       return true;
@@ -98,7 +98,7 @@ class SymptomNotifier extends StateNotifier<SymptomState> {
     state = state.copyWith(isSaving: true, error: null);
     
     try {
-      await _repository.updateSymptom(symptom, _userId);
+      await _repository.updateSymptom(symptom, _userId!);
       await loadSymptoms();
       state = state.copyWith(isSaving: false);
       return true;
@@ -117,7 +117,7 @@ class SymptomNotifier extends StateNotifier<SymptomState> {
     state = state.copyWith(isSaving: true, error: null);
     
     try {
-      await _repository.deleteSymptom(id, _userId);
+      await _repository.deleteSymptom(id, _userId!);
       await loadSymptoms();
       state = state.copyWith(isSaving: false);
       return true;

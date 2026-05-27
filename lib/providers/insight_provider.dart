@@ -56,7 +56,7 @@ class InsightNotifier extends StateNotifier<InsightState> {
     state = state.copyWith(isLoading: true, error: null);
     
     try {
-      final insights = await _repository.getAIInsights(_userId);
+      final insights = await _repository.getAIInsights(_userId!);
       state = state.copyWith(
         isLoading: false,
         insights: insights,
@@ -96,7 +96,7 @@ class InsightNotifier extends StateNotifier<InsightState> {
     try {
       final insight = AIInsight(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
-        userId: _userId,
+        userId: _userId!,
         summary: insightData['summary'],
         possiblePattern: insightData['possiblePattern'],
         careGuidance: insightData['careGuidance'],
@@ -107,7 +107,7 @@ class InsightNotifier extends StateNotifier<InsightState> {
         symptomsCount: insightData['symptomsCount'],
       );
       
-      await _repository.saveAIInsight(insight, _userId);
+      await _repository.saveAIInsight(insight, _userId!);
       await loadInsights();
       
       state = state.copyWith(
@@ -128,7 +128,7 @@ class InsightNotifier extends StateNotifier<InsightState> {
     if (_userId == null) return false;
     
     try {
-      await _repository.deleteAIInsight(id, _userId);
+      await _repository.deleteAIInsight(id, _userId!);
       await loadInsights();
       return true;
     } catch (e) {

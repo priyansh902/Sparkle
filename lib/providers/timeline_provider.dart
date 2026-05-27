@@ -58,7 +58,7 @@ class TimelineNotifier extends StateNotifier<TimelineState> {
     state = state.copyWith(isLoading: true, error: null);
     
     try {
-      final items = await _repository.getTimeline(_userId);
+      final items = await _repository.getTimeline(_userId!);
       state = state.copyWith(
         isLoading: false,
         items: items,

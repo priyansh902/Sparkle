@@ -49,7 +49,7 @@ class FamilyNotifier extends StateNotifier<FamilyState> {
     state = state.copyWith(isLoading: true, error: null);
     
     try {
-      final members = await _repository.getFamilyMembers(_userId);
+      final members = await _repository.getFamilyMembers(_userId!);
       state = state.copyWith(
         isLoading: false,
         members: members,
@@ -66,7 +66,7 @@ class FamilyNotifier extends StateNotifier<FamilyState> {
     if (_userId == null) return false;
     
     try {
-      await _repository.saveFamilyMember(member, _userId);
+      await _repository.saveFamilyMember(member, _userId!);
       await loadMembers();
       return true;
     } catch (e) {
@@ -79,7 +79,7 @@ class FamilyNotifier extends StateNotifier<FamilyState> {
     if (_userId == null) return false;
     
     try {
-      await _repository.updateFamilyMember(member, _userId);
+      await _repository.updateFamilyMember(member, _userId!);
       await loadMembers();
       return true;
     } catch (e) {
@@ -92,7 +92,7 @@ class FamilyNotifier extends StateNotifier<FamilyState> {
     if (_userId == null) return false;
     
     try {
-      await _repository.deleteFamilyMember(id, _userId);
+      await _repository.deleteFamilyMember(id, _userId!);
       await loadMembers();
       return true;
     } catch (e) {
