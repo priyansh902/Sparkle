@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sparkle_lite/Data/models/ai_insight_model.dart';
+import 'package:sparkle_lite/Data/models/doctor_summary_model.dart';
+import 'package:sparkle_lite/Data/models/family_member_model.dart';
 import 'package:sparkle_lite/Data/models/health_record_model.dart';
+import 'package:sparkle_lite/Data/models/privacy_settings_model.dart';
 import 'package:sparkle_lite/Data/models/symptom_log_model.dart';
 import 'package:sparkle_lite/core/constants/app_constants.dart';
 import 'package:sparkle_lite/core/interfaces/database_interface.dart';
@@ -16,6 +19,9 @@ class MockDatabaseService implements DatabaseInterface {
   final Map<String, List<SymptomLog>> _symptomCache = {};
   final Map<String, List<HealthRecord>> _recordCache = {};
   final Map<String, List<AIInsight>> _insightCache = {};
+  final Map<String, List<DoctorSummary>> _summaryCache = {};
+  final Map<String, PrivacySettings> _settingsCache = {};
+  final Map<String, List<FamilyMember>> _familyCache = {};
   
   /// Symptom Methods
   @override
@@ -202,7 +208,6 @@ class MockDatabaseService implements DatabaseInterface {
 
   /// AI Insight Methods
 
-
   @override
   Future<List<AIInsight>> getAIInsights(String userId) async {
     // Check cache first
@@ -250,6 +255,135 @@ class MockDatabaseService implements DatabaseInterface {
     final prefs = await SharedPreferences.getInstance();
     final jsonList = insights.map((i) => i.toJson()).toList();
     await prefs.setString('${AppConstants.keyAIInsights}_$userId', json.encode(jsonList));
+  }
+
+  //DOCTOR SUMMARY METHODS
+
+  @override
+  Future<List<DoctorSummary>> getDoctorSummaries(String userId) async {
+    if (_summaryCache.containsKey(userId)) {
+      return _summaryCache[userId]!;
+    }
+    
+    final prefs = await SharedPreferences.getInstance();
+    final String? summariesJson = prefs.getString('${AppConstants.keyDoctorSummaries}_$userId');
+    
+    if (summariesJson == null) {
+      return [];
+    }
+    
+    final List<dynamic> decoded = json.decode(summariesJson);
+    final summaries = decoded.map((item) => DoctorSummary.fromJson(item)).toList();
+    summaries.sort((a, b) => b.generatedDate.compareTo(a.generatedDate));
+    _summaryCache[userId] = summaries;
+    
+    return summaries;
+  }
+
+  @override
+  Future<void> saveDoctorSummary(DoctorSummary summary, String userId) async {
+    final summaries = await getDoctorSummaries(userId);
+    final updatedSummaries = [summary, ...summaries];
+    await _saveSummariesToStorage(userId, updatedSummaries);
+    _summaryCache[userId] = updatedSummaries;
+  }
+
+  @override
+  Future<void> deleteDoctorSummary(String id, String userId) async {
+    final summaries = await getDoctorSummaries(userId);
+    final updatedSummaries = summaries.where((s) => s.id != id).toList();
+    await _saveSummariesToStorage(userId, updatedSummaries);
+    _summaryCache[userId] = updatedSummaries;
+  }
+
+  Future<void> _saveSummariesToStorage(String userId, List<DoctorSummary> summaries) async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonList = summaries.map((s) => s.toJson()).toList();
+    await prefs.setString('${AppConstants.keyDoctorSummaries}_$userId', json.encode(jsonList));
+  }
+
+  // PRIVACY SETTINGS METHODS
+
+  @override
+  Future<PrivacySettings> getPrivacySettings(String userId) async {
+    if (_settingsCache.containsKey(userId)) {
+      return _settingsCache[userId]!;
+    }
+    
+    final prefs = await SharedPreferences.getInstance();
+    final String? settingsJson = prefs.getString('${AppConstants.keyPrivacySettings}_$userId');
+    
+    if (settingsJson == null) {
+      return const PrivacySettings();
+    }
+    
+    final settings = PrivacySettings.fromJson(json.decode(settingsJson));
+    _settingsCache[userId] = settings;
+    
+    return settings;
+  }
+
+  @override
+  Future<void> savePrivacySettings(PrivacySettings settings, String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('${AppConstants.keyPrivacySettings}_$userId', json.encode(settings.toJson()));
+    _settingsCache[userId] = settings;
+  }
+
+  // FAMILY MEMBER METHODS
+
+  @override
+  Future<List<FamilyMember>> getFamilyMembers(String userId) async {
+    if (_familyCache.containsKey(userId)) {
+      return _familyCache[userId]!;
+    }
+    
+    final prefs = await SharedPreferences.getInstance();
+    final String? membersJson = prefs.getString('${AppConstants.keyFamilyMembers}_$userId');
+    
+    if (membersJson == null) {
+      return [];
+    }
+    
+    final List<dynamic> decoded = json.decode(membersJson);
+    final members = decoded.map((item) => FamilyMember.fromJson(item)).toList();
+    _familyCache[userId] = members;
+    
+    return members;
+  }
+
+  @override
+  Future<void> saveFamilyMember(FamilyMember member, String userId) async {
+    final members = await getFamilyMembers(userId);
+    final updatedMembers = [member, ...members];
+    await _saveFamilyToStorage(userId, updatedMembers);
+    _familyCache[userId] = updatedMembers;
+  }
+
+  @override
+  Future<void> updateFamilyMember(FamilyMember member, String userId) async {
+    final members = await getFamilyMembers(userId);
+    final index = members.indexWhere((m) => m.id == member.id);
+    
+    if (index != -1) {
+      members[index] = member;
+      await _saveFamilyToStorage(userId, members);
+      _familyCache[userId] = members;
+    }
+  }
+
+  @override
+  Future<void> deleteFamilyMember(String id, String userId) async {
+    final members = await getFamilyMembers(userId);
+    final updatedMembers = members.where((m) => m.id != id).toList();
+    await _saveFamilyToStorage(userId, updatedMembers);
+    _familyCache[userId] = updatedMembers;
+  }
+
+  Future<void> _saveFamilyToStorage(String userId, List<FamilyMember> members) async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonList = members.map((m) => m.toJson()).toList();
+    await prefs.setString('${AppConstants.keyFamilyMembers}_$userId', json.encode(jsonList));
   }
 
 }

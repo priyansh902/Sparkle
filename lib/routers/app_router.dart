@@ -3,9 +3,15 @@ import 'package:go_router/go_router.dart';
 import 'package:sparkle_lite/core/constants/app_constants.dart';
 import 'package:sparkle_lite/features/ai_insight/insight_input_screen.dart';
 import 'package:sparkle_lite/features/ai_insight/insight_result_screen.dart';
+import 'package:sparkle_lite/features/doctor_visit/doctor_summary_screen.dart';
+import 'package:sparkle_lite/features/doctor_visit/summary_preview_screen.dart';
+import 'package:sparkle_lite/features/family/add_family_member_screen.dart';
+import 'package:sparkle_lite/features/family/family_list_screen.dart';
 import 'package:sparkle_lite/features/health_records/record_detail_screen.dart';
 import 'package:sparkle_lite/features/health_records/records_list_screen.dart';
 import 'package:sparkle_lite/features/health_records/upload_record_screen.dart';
+import 'package:sparkle_lite/features/settings/notification_settings_screen.dart';
+import 'package:sparkle_lite/features/settings/privacy_settings_screen.dart';
 import 'package:sparkle_lite/features/symptom_tracker/edit_symptom_screen.dart';
 import 'package:sparkle_lite/features/symptom_tracker/symptom_history_screen.dart';
 import 'package:sparkle_lite/features/symptom_tracker/add_symptom_screen.dart';
@@ -82,40 +88,70 @@ final GoRouter appRouter = GoRouter(
       },
     ),
     GoRoute(
-    path: AppConstants.routeRecordsList,
-    name: 'records-list',
-    builder: (context, state) => const RecordsListScreen(),
-    ),
-    GoRoute(
-      path: AppConstants.routeUploadRecord,
-      name: 'upload-record',
-      builder: (context, state) => const UploadRecordScreen(),
-    ),
-    GoRoute(
-      path: '${AppConstants.routeRecordDetail}',
-      name: 'record-detail',
-      builder: (context, state) {
-        final id = state.uri.queryParameters['id'];
-        if (id == null) {
-          return const RecordsListScreen();
-        }
-        return RecordDetailScreen(recordId: id);
-      },
-    ),
-    GoRoute(
-      path: AppConstants.routeTimeline,
-      name: 'timeline',
-      builder: (context, state) => const TimelineScreen(),
-    ),
-    GoRoute(
-      path: AppConstants.routeAIInsightInput,
-      name: 'ai-insight-input',
-      builder: (context, state) => const InsightInputScreen(),
-    ),
-    GoRoute(
-      path: AppConstants.routeAIInsightResult,
-      name: 'ai-insight-result',
-      builder: (context, state) => const InsightResultScreen(),
-    ),
+      path: AppConstants.routeRecordsList,
+      name: 'records-list',
+      builder: (context, state) => const RecordsListScreen(),
+      ),
+        GoRoute(
+          path: AppConstants.routeUploadRecord,
+          name: 'upload-record',
+          builder: (context, state) => const UploadRecordScreen(),
+        ),
+        GoRoute(
+          path: '${AppConstants.routeRecordDetail}',
+          name: 'record-detail',
+          builder: (context, state) {
+            final id = state.uri.queryParameters['id'];
+            if (id == null) {
+              return const RecordsListScreen();
+            }
+            return RecordDetailScreen(recordId: id);
+          },
+        ),
+        GoRoute(
+          path: AppConstants.routeTimeline,
+          name: 'timeline',
+          builder: (context, state) => const TimelineScreen(),
+        ),
+        GoRoute(
+          path: AppConstants.routeAIInsightInput,
+          name: 'ai-insight-input',
+          builder: (context, state) => const InsightInputScreen(),
+        ),
+        GoRoute(
+          path: AppConstants.routeAIInsightResult,
+          name: 'ai-insight-result',
+          builder: (context, state) => const InsightResultScreen(),
+        ),
+      GoRoute(
+        path: AppConstants.routeDoctorSummary,
+        name: 'doctor-summary',
+        builder: (context, state) => const DoctorSummaryScreen(),
+      ),
+      GoRoute(
+        path: AppConstants.routeSummaryPreview,
+        name: 'summary-preview',
+        builder: (context, state) => const SummaryPreviewScreen(),
+      ),
+      GoRoute(
+        path: AppConstants.routePrivacySettings,
+        name: 'privacy-settings',
+        builder: (context, state) => const PrivacySettingsScreen(),
+      ),
+      GoRoute(
+        path: AppConstants.routeFamilyList,
+        name: 'family-list',
+        builder: (context, state) => const FamilyListScreen(),
+      ),
+      GoRoute(
+        path: AppConstants.routeAddFamilyMember,
+        name: 'add-family-member',
+        builder: (context, state) => const AddFamilyMemberScreen(),
+      ),
+      GoRoute(
+        path: AppConstants.routeNotificationSettings,
+        name: 'notification-settings',
+        builder: (context, state) => const NotificationSettingsScreen(),
+      ),
   ],
 );

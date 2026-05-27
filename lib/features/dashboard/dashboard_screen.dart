@@ -147,27 +147,36 @@ class DashboardScreen extends ConsumerWidget {
               
               const SizedBox(height: 24),
               
-              // Coming Soon Section
               const Text(
-                'More Features',
+                'Health Tools',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 18,
                 ),
               ),
               const SizedBox(height: 12),
-              _buildComingSoonCard(
+              _buildFeatureCard(
                 context,
                 'Doctor Visit Summary',
                 'Prepare for your next appointment',
                 Icons.medical_services_outlined,
+                () => context.push(AppConstants.routeDoctorSummary),
               ),
               const SizedBox(height: 12),
-              _buildComingSoonCard(
+              _buildFeatureCard(
                 context,
                 'Privacy Settings',
                 'Control your data preferences',
                 Icons.privacy_tip_outlined,
+                () => context.push(AppConstants.routePrivacySettings),
+              ),
+              const SizedBox(height: 12),
+              _buildFeatureCard(
+                context,
+                'Family Members',
+                'Manage family health profiles',
+                Icons.family_restroom,
+                () => context.push(AppConstants.routeFamilyList),
               ),
               
               const SizedBox(height: 24),
@@ -420,59 +429,6 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
   
-  Widget _buildComingSoonCard(BuildContext context, String title, String subtitle, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xFF7B61FF).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: const Color(0xFF7B61FF), size: 28),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 13,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Icon(Icons.chevron_right, color: Colors.grey[400]),
-        ],
-      ),
-    );
-  }
   
   //HELPER METHODS
   
@@ -485,5 +441,63 @@ class DashboardScreen extends ConsumerWidget {
     if (dateOnly == today) return 'Today';
     if (dateOnly == yesterday) return 'Yesterday';
     return '${date.month}/${date.day}/${date.year}';
+  }
+
+  Widget _buildFeatureCard(BuildContext context, String title, String subtitle, IconData icon, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey[200]!),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF7B61FF).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: const Color(0xFF7B61FF), size: 28),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right, color: Colors.grey[400]),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -1,5 +1,8 @@
 import 'package:sparkle_lite/Data/models/ai_insight_model.dart';
+import 'package:sparkle_lite/Data/models/doctor_summary_model.dart';
+import 'package:sparkle_lite/Data/models/family_member_model.dart';
 import 'package:sparkle_lite/Data/models/health_record_model.dart';
+import 'package:sparkle_lite/Data/models/privacy_settings_model.dart';
 import 'package:sparkle_lite/Data/models/symptom_log_model.dart';
 
 /// Abstract interface for database operations
@@ -46,5 +49,26 @@ abstract class DatabaseInterface {
   Future<void> saveAIInsight(AIInsight insight, String userId);
   
   Future<void> deleteAIInsight(String id, String userId);
+
+  // Doctor Summary methods
+  Future<List<DoctorSummary>> getDoctorSummaries(String userId);
+
+  Future<void> saveDoctorSummary(DoctorSummary summary, String userId);
+
+  Future<void> deleteDoctorSummary(String id, String userId);
+  
+  // Privacy Settings methods
+  Future<PrivacySettings> getPrivacySettings(String userId);
+
+  Future<void> savePrivacySettings(PrivacySettings settings, String userId);
+  
+  // Family Member methods
+  Future<List<FamilyMember>> getFamilyMembers(String userId);
+
+  Future<void> saveFamilyMember(FamilyMember member, String userId);
+
+  Future<void> updateFamilyMember(FamilyMember member, String userId);
+  
+  Future<void> deleteFamilyMember(String id, String userId);
   
 }

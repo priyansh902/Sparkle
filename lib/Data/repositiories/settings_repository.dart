@@ -1,0 +1,23 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/interfaces/database_interface.dart';
+import '../../core/services/mock_database_service.dart';
+import '../models/privacy_settings_model.dart';
+
+final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
+  final databaseService = MockDatabaseService();
+  return SettingsRepository(databaseService: databaseService);
+});
+
+class SettingsRepository {
+  final DatabaseInterface databaseService;
+  
+  SettingsRepository({required this.databaseService});
+  
+  Future<PrivacySettings> getSettings(String userId) async {
+    return await databaseService.getPrivacySettings(userId);
+  }
+  
+  Future<void> saveSettings(PrivacySettings settings, String userId) async {
+    await databaseService.savePrivacySettings(settings, userId);
+  }
+}

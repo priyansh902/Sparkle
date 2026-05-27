@@ -17,6 +17,9 @@ class AppConstants {
   static const String keySymptoms = 'symptoms';
   static const String keyHealthRecords = 'health_records';
   static const String keyAIInsights = 'ai_insights';
+  static const String keyDoctorSummaries = 'doctor_summaries';  
+  static const String keyPrivacySettings = 'privacy_settings';  
+  static const String keyFamilyMembers = 'family_members'; 
 
   /// Validation Constants
   static const int minPasswordLength = 6;
@@ -46,5 +49,12 @@ class AppConstants {
   static const String routeAIInsightResult = '/ai-insight-result';
 
   /// doctor communication routes
+  static const String routeDoctorSummary = '/doctor-summary';
+  static const String routeSummaryPreview = '/summary-preview';
+  static const String routePrivacySettings = '/privacy-settings';
+  static const String routeNotificationSettings = '/notification-settings';
+  static const String routeFamilyList = '/family-list';
+  static const String routeAddFamilyMember = '/add-family-member';
+  
 
 }

@@ -58,8 +58,8 @@ class RecordNotifier extends StateNotifier<RecordState> {
     state = state.copyWith(isLoading: true, error: null);
     
     try {
-      final records = await _repository.getHealthRecords(_userId!);
-      final recentRecords = await _repository.getRecentHealthRecords(_userId!);
+      final records = await _repository.getHealthRecords(_userId);
+      final recentRecords = await _repository.getRecentHealthRecords(_userId);
       
       state = state.copyWith(
         isLoading: false,
@@ -80,7 +80,7 @@ class RecordNotifier extends StateNotifier<RecordState> {
     state = state.copyWith(isSaving: true, error: null);
     
     try {
-      await _repository.saveHealthRecord(record, _userId!);
+      await _repository.saveHealthRecord(record, _userId);
       await loadRecords();
       state = state.copyWith(isSaving: false);
       return true;
@@ -99,7 +99,7 @@ class RecordNotifier extends StateNotifier<RecordState> {
     state = state.copyWith(isSaving: true, error: null);
     
     try {
-      await _repository.updateHealthRecord(record, _userId!);
+      await _repository.updateHealthRecord(record, _userId);
       await loadRecords();
       state = state.copyWith(isSaving: false);
       return true;
@@ -118,7 +118,7 @@ class RecordNotifier extends StateNotifier<RecordState> {
     state = state.copyWith(isSaving: true, error: null);
     
     try {
-      await _repository.deleteHealthRecord(id, _userId!);
+      await _repository.deleteHealthRecord(id, _userId);
       await loadRecords();
       state = state.copyWith(isSaving: false);
       return true;
