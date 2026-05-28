@@ -1,4 +1,4 @@
-/// This file defines all the constant values used throughout the app, such as route names, API keys, and validation rules.
+
 /// Centralizing these values helps maintain consistency and makes it easier to update them in the future.
 /// TODO: Add more constants as needed, such as error messages, default values, and UI strings.
 /// TODO: Consider organizing constants into separate classes or files if the list grows too large.

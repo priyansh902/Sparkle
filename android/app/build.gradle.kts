@@ -8,7 +8,7 @@ android {
     namespace = "com.example.sparkle_lite"
     ndkVersion = "27.0.12077973"
     compileSdk = 34
-    ndkVersion = flutter.ndkVersion
+    // ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
