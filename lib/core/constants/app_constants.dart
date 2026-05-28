@@ -61,4 +61,7 @@ class AppConstants {
   static const double breakpointTablet = 1200;
   static const double breakpointDesktop = 1201;
 
+  // Theme Settings Route
+  static const String routeThemeSettings = '/theme-settings';
+
 }

@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sparkle_lite/providers/settings_provider.dart';
+import 'package:sparkle_lite/providers/theme_provider.dart';
 import 'package:sparkle_lite/shared/widgets/primary_button.dart';
-
-/// This screen allows users to manage their privacy settings, including dashboard visibility, notification preferences, sharing options, and data analytics permissions. It also includes a "Danger Zone" for account deletion and data export.
-/// The settings are loaded from the repository when the screen initializes and can be saved back to the repository when the user taps the "Save Settings" button. The screen uses Riverpod for state management and assumes that the `SettingsRepository` is properly implemented to handle data persistence.
-/// The UI is designed to be user-friendly, with clear sections for different types of settings and a prominent save button. The "Danger Zone" is visually distinct to warn users about the consequences of those actions.
 
 class PrivacySettingsScreen extends ConsumerStatefulWidget {
   const PrivacySettingsScreen({super.key});
@@ -56,8 +53,17 @@ class _PrivacySettingsScreenState extends ConsumerState<PrivacySettingsScreen> {
     }
   }
 
+  Future<void> _setThemeMode(ThemeModeType mode) async {
+    await ref.read(themeProvider.notifier).setThemeMode(mode);
+    // Force rebuild of the app by triggering a state change
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themeState = ref.watch(themeProvider);
+    
     if (_isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
@@ -79,17 +85,17 @@ class _PrivacySettingsScreenState extends ConsumerState<PrivacySettingsScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.blue[50],
+                color: isDark ? Colors.blue[900]?.withOpacity(0.3) : Colors.blue[50],
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.shield_outlined, color: Colors.blue[700]),
+                  Icon(Icons.shield_outlined, color: isDark ? Colors.blue[300] : Colors.blue[700]),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       'Your privacy matters. These settings control how your data is displayed and shared.',
-                      style: TextStyle(color: Colors.blue[800], fontSize: 13),
+                      style: TextStyle(color: isDark ? Colors.blue[300] : Colors.blue[800], fontSize: 13),
                     ),
                   ),
                 ],
@@ -101,6 +107,7 @@ class _PrivacySettingsScreenState extends ConsumerState<PrivacySettingsScreen> {
             // Dashboard privacy
             _buildSettingsSection(
               title: 'Dashboard Privacy',
+              isDark: isDark,
               children: [
                 SwitchListTile(
                   title: const Text('Hide sensitive dashboard details'),
@@ -120,6 +127,7 @@ class _PrivacySettingsScreenState extends ConsumerState<PrivacySettingsScreen> {
             // Notification privacy
             _buildSettingsSection(
               title: 'Notification Privacy',
+              isDark: isDark,
               children: [
                 SwitchListTile(
                   title: const Text('Use generic notification text'),
@@ -136,9 +144,15 @@ class _PrivacySettingsScreenState extends ConsumerState<PrivacySettingsScreen> {
             
             const SizedBox(height: 16),
             
+            // Theme Section (Appearance)
+            _buildThemeSection(isDark, themeState),
+            
+            const SizedBox(height: 16),
+            
             // Sharing preferences
             _buildSettingsSection(
               title: 'Sharing Preferences',
+              isDark: isDark,
               children: [
                 SwitchListTile(
                   title: const Text('Require confirmation before sharing records'),
@@ -168,6 +182,7 @@ class _PrivacySettingsScreenState extends ConsumerState<PrivacySettingsScreen> {
             // Data & analytics
             _buildSettingsSection(
               title: 'Data & Analytics',
+              isDark: isDark,
               children: [
                 SwitchListTile(
                   title: const Text('Allow anonymous analytics'),
@@ -187,34 +202,34 @@ class _PrivacySettingsScreenState extends ConsumerState<PrivacySettingsScreen> {
             // Danger zone
             Container(
               decoration: BoxDecoration(
-                color: Colors.red[50],
+                color: isDark ? Colors.red[900]?.withOpacity(0.3) : Colors.red[50],
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.red[200]!),
+                border: Border.all(color: isDark ? Colors.red[800]! : Colors.red[200]!),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.all(16),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
                     child: Text(
                       'Danger Zone',
                       style: TextStyle(
-                        color: Colors.red,
+                        color: isDark ? Colors.red[300] : Colors.red,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
-                  const Divider(height: 0, color: Colors.red),
+                  Divider(height: 0, color: isDark ? Colors.red[800] : Colors.red[200]),
                   ListTile(
-                    leading: const Icon(Icons.delete_forever, color: Colors.red),
-                    title: const Text('Delete Account'),
-                    subtitle: const Text('Permanently delete all your health data'),
+                    leading: Icon(Icons.delete_forever, color: isDark ? Colors.red[300] : Colors.red),
+                    title: Text('Delete Account', style: TextStyle(color: isDark ? Colors.red[300] : Colors.red)),
+                    subtitle: Text('Permanently delete all your health data', style: TextStyle(color: isDark ? Colors.red[300]?.withOpacity(0.7) : Colors.red[700])),
                     onTap: () => _showDeleteAccountDialog(context),
                   ),
                   ListTile(
-                    leading: const Icon(Icons.download, color: Colors.red),
-                    title: const Text('Export All Data'),
-                    subtitle: const Text('Download a copy of your health data'),
+                    leading: Icon(Icons.download, color: isDark ? Colors.red[300] : Colors.red),
+                    title: Text('Export All Data', style: TextStyle(color: isDark ? Colors.red[300] : Colors.red)),
+                    subtitle: Text('Download a copy of your health data', style: TextStyle(color: isDark ? Colors.red[300]?.withOpacity(0.7) : Colors.red[700])),
                     onTap: () => _showExportDialog(context),
                   ),
                 ],
@@ -235,13 +250,14 @@ class _PrivacySettingsScreenState extends ConsumerState<PrivacySettingsScreen> {
   
   Widget _buildSettingsSection({
     required String title,
+    required bool isDark,
     required List<Widget> children,
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? Colors.grey[850] : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: isDark ? Colors.grey[800]! : Colors.grey[200]!),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,13 +266,75 @@ class _PrivacySettingsScreenState extends ConsumerState<PrivacySettingsScreen> {
             padding: const EdgeInsets.all(16),
             child: Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
+            ),
+          ),
+          ...children,
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildThemeSection(bool isDark, ThemeState themeState) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? Colors.grey[850] : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: isDark ? Colors.grey[800]! : Colors.grey[200]!),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(16),
+            child: Text(
+              'Appearance',
+              style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
               ),
             ),
           ),
-          ...children,
+          RadioListTile<ThemeModeType>(
+            title: Text('Light Mode', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+            subtitle: Text('Always use light theme', style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600])),
+            value: ThemeModeType.light,
+            groupValue: themeState.mode,
+            onChanged: (value) {
+              if (value != null) {
+                _setThemeMode(value);
+              }
+            },
+            activeColor: const Color(0xFF7B61FF),
+          ),
+          RadioListTile<ThemeModeType>(
+            title: Text('Dark Mode', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+            subtitle: Text('Always use dark theme', style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600])),
+            value: ThemeModeType.dark,
+            groupValue: themeState.mode,
+            onChanged: (value) {
+              if (value != null) {
+                _setThemeMode(value);
+              }
+            },
+            activeColor: const Color(0xFF7B61FF),
+          ),
+          RadioListTile<ThemeModeType>(
+            title: Text('System Default', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+            subtitle: Text('Follow device theme settings', style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600])),
+            value: ThemeModeType.system,
+            groupValue: themeState.mode,
+            onChanged: (value) {
+              if (value != null) {
+                _setThemeMode(value);
+              }
+            },
+            activeColor: const Color(0xFF7B61FF),
+          ),
         ],
       ),
     );

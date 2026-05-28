@@ -153,5 +153,6 @@ final GoRouter appRouter = GoRouter(
         name: 'notification-settings',
         builder: (context, state) => const NotificationSettingsScreen(),
       ),
+    
   ],
 );

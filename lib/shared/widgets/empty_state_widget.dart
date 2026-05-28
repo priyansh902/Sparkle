@@ -1,9 +1,6 @@
+
 import 'package:flutter/material.dart';
 
-
-//// Reusable widget for displaying an empty state with a title, message, and optional action button. This widget is used across the app to show friendly messages when there is no data to display, such as no symptoms logged or no health records uploaded. It includes an icon, a title, a message, and an optional button that can trigger a callback when pressed. The design is clean and consistent with the overall app theme, providing a positive user experience even when there is no content to show.
-/// The EmptyStateWidget is flexible and can be used in various contexts by customizing the title, message, icon, and button action. It helps to guide users towards taking action, such as adding a new symptom log or uploading a health record, while also providing reassurance that their data is private and secure. Overall, this widget plays an important role in maintaining user engagement and encouraging interaction with the app's features, even when there is no existing data to display.
-/// The EmptyStateWidget is designed to be visually appealing and user-friendly, with a focus on clear communication and encouraging user action. The use of icons, typography, and spacing is carefully chosen to create a welcoming and informative experience for users when they encounter an empty state in the app. By providing a consistent and engaging empty state experience, the EmptyStateWidget helps to enhance the overall user experience and keep users motivated to interact with their health data.
 class EmptyStateWidget extends StatelessWidget {
   final String title;
   final String message;
@@ -22,6 +19,8 @@ class EmptyStateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
@@ -31,14 +30,14 @@ class EmptyStateWidget extends StatelessWidget {
             Icon(
               icon,
               size: 80,
-              color: Colors.grey[400],
+              color: isDark ? Colors.grey[600] : Colors.grey[400],
             ),
             const SizedBox(height: 24),
             Text(
               title,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[700],
+                color: isDark ? Colors.grey[300] : Colors.grey[700],
               ),
               textAlign: TextAlign.center,
             ),
@@ -46,7 +45,7 @@ class EmptyStateWidget extends StatelessWidget {
             Text(
               message,
               style: TextStyle(
-                color: Colors.grey[500],
+                color: isDark ? Colors.grey[500] : Colors.grey[500],
                 fontSize: 14,
               ),
               textAlign: TextAlign.center,

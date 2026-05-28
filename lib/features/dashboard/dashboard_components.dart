@@ -7,11 +7,16 @@ import 'package:sparkle_lite/Data/models/symptom_log_model.dart';
 import 'package:sparkle_lite/providers/record_provider.dart';
 import 'package:sparkle_lite/providers/symptom_provider.dart';
 import 'package:sparkle_lite/shared/utils/responsive_utils.dart';
-import 'package:sparkle_lite/shared/widgets/empty_state_widget.dart';
+import 'package:sparkle_lite/shared/widgets/empty_state_widget.dart'; 
+
+/// This file contains reusable components for the dashboard screen, such as stat cards, recent activity sections, and quick action buttons.
+/// These components are designed to be used in both the mobile and web versions of the dashboard,
 
 class DashboardComponents {
-  //  QUICK ACTIONS 
+  // QUICK ACTIONS 
   static Widget buildQuickActionsGrid(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     final actions = [
       _QuickAction(
         title: 'Log Symptom',
@@ -54,9 +59,13 @@ class DashboardComponents {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Quick Actions',
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
         ),
         const SizedBox(height: 12),
         ResponsiveGrid(
@@ -68,12 +77,14 @@ class DashboardComponents {
   }
 
   static Widget _buildQuickActionCard(BuildContext context, _QuickAction action) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return InkWell(
       onTap: () => context.push(action.route),
       borderRadius: BorderRadius.circular(16),
       child: Container(
         decoration: BoxDecoration(
-          color: action.color.withOpacity(0.1),
+          color: action.color.withOpacity(isDark ? 0.2 : 0.1),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -83,7 +94,10 @@ class DashboardComponents {
             const SizedBox(height: 8),
             ResponsiveText(
               action.title,
-              style: const TextStyle(fontWeight: FontWeight.w500),
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: isDark ? Colors.white70 : Colors.black87,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -92,10 +106,11 @@ class DashboardComponents {
     );
   }
 
-  //  STAT CARDS (Web) 
+  // STAT CARDS (Web) 
   static Widget buildStatCards(BuildContext context, WidgetRef ref) {
     final symptomState = ref.watch(symptomProvider);
     final recordState = ref.watch(recordProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return ResponsiveRow(
       children: [
@@ -105,6 +120,7 @@ class DashboardComponents {
           '${symptomState.symptoms.length}',
           Icons.favorite,
           Colors.red,
+          isDark,
         ),
         _buildStatCard(
           context,
@@ -112,6 +128,7 @@ class DashboardComponents {
           '${recordState.records.length}',
           Icons.folder,
           const Color(0xFF7B61FF),
+          isDark,
         ),
         _buildStatCard(
           context,
@@ -119,18 +136,19 @@ class DashboardComponents {
           '0',
           Icons.psychology,
           const Color(0xFF4ECDC4),
+          isDark,
         ),
       ],
     );
   }
 
-  static Widget _buildStatCard(BuildContext context, String title, String value, IconData icon, Color color) {
+  static Widget _buildStatCard(BuildContext context, String title, String value, IconData icon, Color color, bool isDark) {
     return Container(
       padding: EdgeInsets.all(context.responsivePadding),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? Colors.grey[850] : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: isDark ? Colors.grey[800]! : Colors.grey[200]!),
       ),
       child: Row(
         children: [
@@ -148,9 +166,18 @@ class DashboardComponents {
             children: [
               ResponsiveText(
                 value,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
               ),
-              Text(title, style: TextStyle(color: Colors.grey[600], fontSize: context.captionSize)),
+              Text(
+                title,
+                style: TextStyle(
+                  color: isDark ? Colors.grey[400] : Colors.grey[600],
+                  fontSize: context.captionSize,
+                ),
+              ),
             ],
           ),
         ],
@@ -158,17 +185,23 @@ class DashboardComponents {
     );
   }
 
-  //  RECENT SYMPTOMS
+  // RECENT SYMPTOMS 
   static Widget buildRecentSymptomsSection(BuildContext context, WidgetRef ref, SymptomState state) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Recent Symptoms',
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 18,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
             ),
             TextButton(
               onPressed: () => context.push(AppConstants.routeSymptomHistory),
@@ -206,16 +239,19 @@ class DashboardComponents {
   }
 
   static Widget _buildSymptomTile(BuildContext context, SymptomLog symptom) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: isDark ? Colors.grey[850] : Colors.white,
       child: ListTile(
         dense: context.isDesktop,
         leading: CircleAvatar(
           radius: context.isMobile ? 20 : 24,
           backgroundColor: symptom.painLevel >= 7
-              ? Colors.red.withOpacity(0.1)
-              : const Color(0xFF7B61FF).withOpacity(0.1),
+              ? Colors.red.withOpacity(0.2)
+              : const Color(0xFF7B61FF).withOpacity(0.2),
           child: Icon(
             Icons.favorite,
             color: symptom.painLevel >= 7 ? Colors.red : const Color(0xFF7B61FF),
@@ -224,20 +260,27 @@ class DashboardComponents {
         ),
         title: Text(
           _formatDate(symptom.date),
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: context.bodySize),
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: context.bodySize,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
         ),
         subtitle: Text(
           symptom.symptoms.take(2).join(', '),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(fontSize: context.captionSize),
+          style: TextStyle(
+            fontSize: context.captionSize,
+            color: isDark ? Colors.grey[400] : Colors.grey[600],
+          ),
         ),
         trailing: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
             color: symptom.painLevel >= 7
-                ? Colors.red.withOpacity(0.1)
-                : const Color(0xFF7B61FF).withOpacity(0.1),
+                ? Colors.red.withOpacity(0.2)
+                : const Color(0xFF7B61FF).withOpacity(0.2),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
@@ -256,15 +299,21 @@ class DashboardComponents {
 
   //  RECENT RECORDS
   static Widget buildRecentRecordsSection(BuildContext context, WidgetRef ref, RecordState state) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Recent Health Records',
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 18,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
             ),
             TextButton(
               onPressed: () => context.push(AppConstants.routeRecordsList),
@@ -302,30 +351,40 @@ class DashboardComponents {
   }
 
   static Widget _buildRecordTile(BuildContext context, HealthRecord record) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: isDark ? Colors.grey[850] : Colors.white,
       child: ListTile(
         dense: context.isDesktop,
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: const Color(0xFF7B61FF).withOpacity(0.1),
+            color: const Color(0xFF7B61FF).withOpacity(0.2),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(record.recordType.icon, color: const Color(0xFF7B61FF), size: context.isMobile ? 20 : 24),
         ),
         title: Text(
           record.title,
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: context.bodySize),
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: context.bodySize,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
         subtitle: Text(
           '${record.recordType.displayName} • ${_formatDate(record.recordDate)}',
-          style: TextStyle(color: Colors.grey[600], fontSize: context.captionSize),
+          style: TextStyle(
+            color: isDark ? Colors.grey[400] : Colors.grey[600],
+            fontSize: context.captionSize,
+          ),
         ),
-        trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+        trailing: Icon(Icons.chevron_right, color: isDark ? Colors.grey[600] : Colors.grey[400]),
         onTap: () => context.push('${AppConstants.routeRecordDetail}?id=${record.id}'),
       ),
     );
@@ -333,6 +392,8 @@ class DashboardComponents {
 
   // ACTION CARDS (Web) 
   static Widget buildActionCards(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     final actions = [
       _ActionCard(
         title: 'Log Symptom',
@@ -370,8 +431,11 @@ class DashboardComponents {
   }
 
   static Widget _buildActionCard(BuildContext context, _ActionCard action) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: isDark ? Colors.grey[850] : Colors.white,
       child: InkWell(
         onTap: () => context.push(action.route),
         borderRadius: BorderRadius.circular(16),
@@ -382,7 +446,7 @@ class DashboardComponents {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: action.color.withOpacity(0.1),
+                  color: action.color.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(action.icon, color: action.color, size: context.isMobile ? 28 : 32),
@@ -390,12 +454,15 @@ class DashboardComponents {
               SizedBox(height: context.smallSpacing),
               ResponsiveText(
                 action.title,
-                style: const TextStyle(fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
               ),
               SizedBox(height: 4),
               ResponsiveText(
                 action.subtitle,
-                style: TextStyle(color: Colors.grey[600]),
+                style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -405,8 +472,10 @@ class DashboardComponents {
     );
   }
 
-  // HEALTH TOOLS
+  //  HEALTH TOOLS 
   static Widget buildHealthToolsSection(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     final tools = [
       _HealthTool(
         title: 'Doctor Visit Summary',
@@ -437,9 +506,13 @@ class DashboardComponents {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Health Tools',
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
         ),
         const SizedBox(height: 12),
         ...tools.map((tool) => Padding(
@@ -451,41 +524,56 @@ class DashboardComponents {
   }
 
   static Widget _buildHealthToolTile(BuildContext context, _HealthTool tool) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: isDark ? Colors.grey[850] : Colors.white,
       child: ListTile(
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: const Color(0xFF7B61FF).withOpacity(0.1),
+            color: const Color(0xFF7B61FF).withOpacity(0.2),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(tool.icon, color: const Color(0xFF7B61FF)),
         ),
-        title: Text(tool.title, style: TextStyle(fontWeight: FontWeight.w600, fontSize: context.bodySize)),
-        subtitle: Text(tool.subtitle, style: TextStyle(color: Colors.grey[600], fontSize: context.captionSize)),
-        trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+        title: Text(
+          tool.title,
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: context.bodySize,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
+        ),
+        subtitle: Text(
+          tool.subtitle,
+          style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600], fontSize: context.captionSize),
+        ),
+        trailing: Icon(Icons.chevron_right, color: isDark ? Colors.grey[600] : Colors.grey[400]),
         onTap: () => context.push(tool.route),
       ),
     );
   }
 
-  //  PRIVACY REMINDER
+  //  PRIVACY REMINDER 
   static Widget buildPrivacyReminder(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Container(
       padding: EdgeInsets.all(context.responsivePadding),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: isDark ? Colors.grey[850] : Colors.grey[100],
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         children: [
-          Icon(Icons.lock_outline, size: context.isMobile ? 18 : 20, color: Colors.grey[600]),
+          Icon(Icons.lock_outline, size: context.isMobile ? 18 : 20, color: isDark ? Colors.grey[500] : Colors.grey[600]),
           const SizedBox(width: 8),
           Expanded(
             child: ResponsiveText(
               'Your data is private and secure',
-              style: TextStyle(color: Colors.grey[600]),
+              style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
             ),
           ),
         ],

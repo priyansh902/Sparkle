@@ -38,8 +38,8 @@ class WebDashboard extends ConsumerWidget {
               children: [
                 // Welcome header
                 ResponsiveText(
-                  'Welcome back, ${user?.name ?? "User"}! Welcome Lady Sparkle! ✨',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  'Welcome Lady Sparkle! ✨, ${user?.name ?? "User"}!',
+                  style: const TextStyle(fontWeight: FontWeight.normal),
                 ),
                 const SizedBox(height: 8),
                 ResponsiveText(
@@ -64,7 +64,7 @@ class WebDashboard extends ConsumerWidget {
                 // Quick actions cards
                 const Text(
                   'Quick Actions',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 12),
                 DashboardComponents.buildActionCards(context),

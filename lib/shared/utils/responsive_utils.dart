@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 
 /// Responsive breakpoints
@@ -36,12 +37,12 @@ extension ResponsiveContext on BuildContext {
   
   // Responsive grid columns
   int get gridColumns => isMobile ? 2 : (isTablet ? 3 : 4);
-  
-  // Responsive action buttons per row
   int get actionsPerRow => isMobile ? 2 : (isTablet ? 3 : 4);
-  
-  // Card height
   double get quickActionHeight => isMobile ? 100 : 120;
+  
+  // Theme-aware spacing (NEW)
+  EdgeInsets get screenPadding => EdgeInsets.all(responsivePadding);
+  EdgeInsets get cardPadding => EdgeInsets.all(isMobile ? 12 : 16);
 }
 
 /// Responsive widget that builds different child based on screen size
@@ -110,7 +111,6 @@ class ResponsiveRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (context.isMobile) {
-      // Wrap on mobile
       return Wrap(
         spacing: spacing,
         runSpacing: spacing,
@@ -119,7 +119,6 @@ class ResponsiveRow extends StatelessWidget {
         children: children,
       );
     } else {
-      // Row on desktop
       return Row(
         mainAxisAlignment: mainAxisAlignment,
         crossAxisAlignment: crossAxisAlignment,
@@ -168,7 +167,6 @@ class ResponsiveText extends StatelessWidget {
         responsiveFontSize = fontSize.toDouble();
       }
     } else {
-      // Use context-based defaults
       if (baseStyle.fontWeight == FontWeight.bold && fontSize == null) {
         responsiveFontSize = context.headlineSize;
       } else {
@@ -200,7 +198,7 @@ class ResponsivePadding extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: padding ?? EdgeInsets.all(context.responsivePadding),
+      padding: padding ?? context.screenPadding,
       child: child,
     );
   }
