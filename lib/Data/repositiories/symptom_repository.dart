@@ -1,13 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sparkle_lite/core/interfaces/database_interface.dart';
-import 'package:sparkle_lite/core/services/mock_database_service.dart';
+import 'package:sparkle_lite/core/services/firebase_database_service.dart';
+// import 'package:sparkle_lite/core/services/mock_database_service.dart';
 import 'package:sparkle_lite/Data/models/symptom_log_model.dart';
 
 /// SymptomRepository provides an abstraction layer over the database service for managing symptom logs. It handles business logic, validation, and data transformations.
 /// This repository allows the UI layer to interact with symptom data without needing to know the details of how it's stored or retrieved, promoting separation of concerns and maintainability.
 /// The repository includes methods for fetching, saving, updating, and deleting symptom logs, as well as additional functionality for retrieving recent symptoms and filtering by date range. It also includes validation logic to ensure that symptom data is consistent and valid before being saved to the database.
 final symptomRepositoryProvider = Provider<SymptomRepository>((ref) {
-  final databaseService = MockDatabaseService();
+
+  // final databaseService = MockDatabaseService();
+
+  final databaseService = FirebaseDatabaseService();
+
   return SymptomRepository(databaseService: databaseService);
 });
 

@@ -1,13 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sparkle_lite/core/interfaces/database_interface.dart';
-import 'package:sparkle_lite/core/services/mock_database_service.dart';
+import 'package:sparkle_lite/core/services/firebase_database_service.dart';
+// import 'package:sparkle_lite/core/services/mock_database_service.dart';
 import 'package:sparkle_lite/Data/models/health_record_model.dart';
 
 /// Repository for managing health records
 /// This repository abstracts the database operations related to health records, providing a clean API for the rest of the app to interact with.
 /// It interacts with the DatabaseInterface, allowing for different implementations (e.g., local storage, remote database) without changing the app logic.
 final recordRepositoryProvider = Provider<RecordRepository>((ref) {
-  final databaseService = MockDatabaseService();
+
+  // final databaseService = MockDatabaseService();
+
+  final databaseService = FirebaseDatabaseService();
+
   return RecordRepository(databaseService: databaseService);
 });
 

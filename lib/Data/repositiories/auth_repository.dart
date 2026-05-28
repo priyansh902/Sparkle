@@ -1,13 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sparkle_lite/core/interfaces/auth_interface.dart';
-import 'package:sparkle_lite/core/services/mock_auth_service.dart';
+import 'package:sparkle_lite/core/services/firebase_auth_service.dart';
+// import 'package:sparkle_lite/core/services/mock_auth_service.dart';
 import 'package:sparkle_lite/Data/models/user_model.dart';
 
 
 /// Repository that abstracts authentication logic and interacts with the AuthInterface.
 /// This allows for different implementations of authentication (e.g., Firebase, mock) without changing the app logic.
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  final authService = MockAuthService();
+  
+  // final authService = MockAuthService();
+
+  final authService = FirebaseAuthService();
+
   return AuthRepository(authService: authService);
 });
 

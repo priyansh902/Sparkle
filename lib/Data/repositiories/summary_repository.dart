@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sparkle_lite/core/interfaces/database_interface.dart';
-import 'package:sparkle_lite/core/services/mock_database_service.dart';
+import 'package:sparkle_lite/core/services/firebase_database_service.dart';
+// import 'package:sparkle_lite/core/services/mock_database_service.dart';
 import 'package:sparkle_lite/Data/models/doctor_summary_model.dart';
 import 'package:sparkle_lite/Data/models/symptom_log_model.dart';
 import 'package:sparkle_lite/Data/models/health_record_model.dart';
@@ -12,7 +13,11 @@ import 'package:sparkle_lite/Data/models/user_model.dart';
 /// The `SummaryRepository` is designed to be used with Riverpod for state management, allowing for easy dependency injection and testing.
 
 final summaryRepositoryProvider = Provider<SummaryRepository>((ref) {
-  final databaseService = MockDatabaseService();
+
+  // final databaseService = MockDatabaseService();
+
+  final databaseService = FirebaseDatabaseService();
+
   return SummaryRepository(databaseService: databaseService);
 });
 

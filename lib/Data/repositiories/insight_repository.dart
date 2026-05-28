@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sparkle_lite/core/interfaces/database_interface.dart';
-import 'package:sparkle_lite/core/services/mock_database_service.dart';
+import 'package:sparkle_lite/core/services/firebase_database_service.dart';
+// import 'package:sparkle_lite/core/services/mock_database_service.dart';
 import 'package:sparkle_lite/core/services/mock_ai_service.dart';
 import 'package:sparkle_lite/Data/models/ai_insight_model.dart';
 import 'package:sparkle_lite/Data/models/symptom_log_model.dart';
@@ -10,7 +11,11 @@ import 'package:sparkle_lite/Data/models/symptom_log_model.dart';
 /// It interacts with the DatabaseInterface to perform CRUD operations on AI insights and uses the MockAIService to generate insights based on symptom data. The repository ensures that all operations are performed in a safe and non-diagnostic manner, adhering to the principle of providing informational insights without making any medical claims or diagnoses.
 
 final insightRepositoryProvider = Provider<InsightRepository>((ref) {
-  final databaseService = MockDatabaseService();
+
+  // final databaseService = MockDatabaseService();
+
+  final databaseService = FirebaseDatabaseService();
+
   return InsightRepository(databaseService: databaseService);
 });
 

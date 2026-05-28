@@ -10,9 +10,13 @@ import 'insight_repository.dart';
 /// It fetches data from the SymptomRepository, RecordRepository, and InsightRepository, and combines them into a unified list of TimelineItems that can be displayed in the timeline UI. The repository also provides functionality for filtering the timeline by item type (symptom, record, insight) and sorting items by date. This design ensures that the timeline feature is flexible and can easily adapt to changes in the underlying data models or sources in the future.
 
 final timelineRepositoryProvider = Provider<TimelineRepository>((ref) {
+
   final symptomRepo = ref.read(symptomRepositoryProvider);
+
   final recordRepo = ref.read(recordRepositoryProvider);
+
   final insightRepo = ref.read(insightRepositoryProvider);
+  
   return TimelineRepository(
     symptomRepository: symptomRepo,
     recordRepository: recordRepo,
