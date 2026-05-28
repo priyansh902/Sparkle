@@ -1,46 +1,83 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
-  <base href="$FLUTTER_BASE_HREF">
-
+  <base href="/">
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="Sparkle Lite - Women & Family Health Companion">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="sparkle_lite">
+  <meta name="apple-mobile-web-app-title" content="Sparkle Lite">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>sparkle_lite</title>
+  <title>Sparkle Lite - Health Companion</title>
   <link rel="manifest" href="manifest.json">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+    .loading-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #e0e0e0;
+      border-top-color: #7B61FF;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
+  <div class="loading-container" id="loading">
+    <div class="loading-spinner"></div>
+  </div>
 
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
+  <!-- Firebase Configuration -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js';
+    import { getAuth } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js';
+    import { getFirestore } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js';
+    import { getStorage } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-storage.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBjB7C6SCwBtd0AtagVy4NLCbjqa4se0Y4",
+      authDomain: "sparkle-lite-78f1c.firebaseapp.com",
+      projectId: "sparkle-lite-78f1c",
+      storageBucket: "sparkle-lite-78f1c.firebasestorage.app",
+      messagingSenderId: "655837677296",
+      appId: "1:655837677296:web:7b8130c0525d21b466e435"
+    };
+
+    try {
+      const app = initializeApp(firebaseConfig);
+      window.firebaseApp = app;
+      window.firebaseAuth = getAuth(app);
+      window.firebaseDb = getFirestore(app);
+      window.firebaseStorage = getStorage(app);
+      console.log("✅ Firebase initialized successfully");
+    } catch (error) {
+      console.error("❌ Firebase initialization error:", error);
+    }
+  </script>
+
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
