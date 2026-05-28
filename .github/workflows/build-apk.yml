@@ -42,6 +42,40 @@ jobs:
       - name: Verify firebase_options.dart
         run: cat lib/firebase_options.dart
       
+       - name: Create google-services.json
+        run: |
+          cat > android/app/google-services.json << 'EOF'
+          {
+            "project_info": {
+              "project_number": "${{ secrets.FIREBASE_PROJECT_NUMBER }}",
+              "project_id": "${{ secrets.FIREBASE_PROJECT_ID }}",
+              "storage_bucket": "${{ secrets.FIREBASE_STORAGE_BUCKET }}"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "${{ secrets.FIREBASE_ANDROID_APP_ID }}",
+                  "android_client_info": {
+                    "package_name": "com.example.sparkle_lite"
+                  }
+                },
+                "api_key": [
+                  {
+                    "current_key": "${{ secrets.FIREBASE_API_KEY }}"
+                  }
+                ]
+              }
+            ],
+            "configuration_version": "1"
+          }
+          EOF
+      
+      # Debug: Verify files exist (optional)
+      - name: Verify files exist
+        run: |
+          ls -la lib/firebase_options.dart
+          ls -la android/app/google-services.json
+      
       - name: Install dependencies
         run: flutter pub get
       
