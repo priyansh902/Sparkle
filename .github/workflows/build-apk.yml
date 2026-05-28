@@ -1,3 +1,4 @@
+
 name: Build Android APK
 
 on:
@@ -8,22 +9,31 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.41.1'
           channel: 'stable'
 
+      - name: Flutter Doctor
+        run: flutter doctor -v
+
       - name: Create firebase_options.dart
         run: |
           cat > lib/firebase_options.dart << 'EOF'
           import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
-          
+
           class DefaultFirebaseOptions {
             static FirebaseOptions get currentPlatform {
               return const FirebaseOptions(
@@ -37,10 +47,7 @@ jobs:
             }
           }
           EOF
-      
-      - name: Verify firebase_options.dart
-        run: cat lib/firebase_options.dart
-      
+
       - name: Create google-services.json
         run: |
           cat > android/app/google-services.json << 'EOF'
@@ -68,20 +75,24 @@ jobs:
             "configuration_version": "1"
           }
           EOF
-      
+
       - name: Verify files exist
         run: |
           ls -la lib/firebase_options.dart
           ls -la android/app/google-services.json
-      
+
+      - name: Clean project
+        run: flutter clean
+
       - name: Install dependencies
         run: flutter pub get
-      
+
       - name: Build APK
         run: flutter build apk --release
-      
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: sparkle-lite-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+

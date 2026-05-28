@@ -1,4 +1,4 @@
-```kotlin
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -49,4 +49,4 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
 }
-```
+

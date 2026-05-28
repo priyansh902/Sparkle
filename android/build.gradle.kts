@@ -1,4 +1,4 @@
-```kotlin
+
 import java.io.File
 
 allprojects {
@@ -25,4 +25,4 @@ subprojects {
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
-```
+
