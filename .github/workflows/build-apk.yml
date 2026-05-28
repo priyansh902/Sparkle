@@ -38,11 +38,10 @@ jobs:
           }
           EOF
       
-      # Debug: Print the contents of firebase_options.dart to verify it was created correctly
       - name: Verify firebase_options.dart
         run: cat lib/firebase_options.dart
       
-       - name: Create google-services.json
+      - name: Create google-services.json
         run: |
           cat > android/app/google-services.json << 'EOF'
           {
@@ -70,7 +69,6 @@ jobs:
           }
           EOF
       
-      # Debug: Verify files exist (optional)
       - name: Verify files exist
         run: |
           ls -la lib/firebase_options.dart
