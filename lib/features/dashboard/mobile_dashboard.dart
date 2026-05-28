@@ -36,8 +36,8 @@ class MobileDashboard extends ConsumerWidget {
               children: [
                 // Greeting
                 ResponsiveText(
-                  'Hello, ${user?.name ?? "User"}! 👋',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  'Hello, ${user?.name ?? "User"}! Welcome Lady Sparkle! ✨',
+                  style: const TextStyle(fontWeight: FontWeight.normal),
                 ),
                 const SizedBox(height: 4),
                 ResponsiveText(

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/constants/app_constants.dart';
-import '../../Data/models/health_record_model.dart';
-import '../../Data/models/symptom_log_model.dart';
-import '../../providers/record_provider.dart';
-import '../../providers/symptom_provider.dart';
-import '../../shared/utils/responsive_utils.dart';
-import '../../shared/widgets/empty_state_widget.dart';
+import 'package:sparkle_lite/core/constants/app_constants.dart';
+import 'package:sparkle_lite/Data/models/health_record_model.dart';
+import 'package:sparkle_lite/Data/models/symptom_log_model.dart';
+import 'package:sparkle_lite/providers/record_provider.dart';
+import 'package:sparkle_lite/providers/symptom_provider.dart';
+import 'package:sparkle_lite/shared/utils/responsive_utils.dart';
+import 'package:sparkle_lite/shared/widgets/empty_state_widget.dart';
 
 class DashboardComponents {
-  // ========== QUICK ACTIONS ==========
+  //  QUICK ACTIONS 
   static Widget buildQuickActionsGrid(BuildContext context) {
     final actions = [
       _QuickAction(
@@ -92,7 +92,7 @@ class DashboardComponents {
     );
   }
 
-  // ========== STAT CARDS (Web) ==========
+  //  STAT CARDS (Web) 
   static Widget buildStatCards(BuildContext context, WidgetRef ref) {
     final symptomState = ref.watch(symptomProvider);
     final recordState = ref.watch(recordProvider);
@@ -158,7 +158,7 @@ class DashboardComponents {
     );
   }
 
-  // ========== RECENT SYMPTOMS ==========
+  //  RECENT SYMPTOMS
   static Widget buildRecentSymptomsSection(BuildContext context, WidgetRef ref, SymptomState state) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -254,7 +254,7 @@ class DashboardComponents {
     );
   }
 
-  // ========== RECENT RECORDS ==========
+  //  RECENT RECORDS
   static Widget buildRecentRecordsSection(BuildContext context, WidgetRef ref, RecordState state) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -331,7 +331,7 @@ class DashboardComponents {
     );
   }
 
-  // ========== ACTION CARDS (Web) ==========
+  // ACTION CARDS (Web) 
   static Widget buildActionCards(BuildContext context) {
     final actions = [
       _ActionCard(
@@ -405,7 +405,7 @@ class DashboardComponents {
     );
   }
 
-  // ========== HEALTH TOOLS ==========
+  // HEALTH TOOLS
   static Widget buildHealthToolsSection(BuildContext context) {
     final tools = [
       _HealthTool(
@@ -470,7 +470,7 @@ class DashboardComponents {
     );
   }
 
-  // ========== PRIVACY REMINDER ==========
+  //  PRIVACY REMINDER
   static Widget buildPrivacyReminder(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(context.responsivePadding),
@@ -493,7 +493,7 @@ class DashboardComponents {
     );
   }
 
-  // ========== HELPERS ==========
+  //  HELPERS 
   static String _formatDate(DateTime date) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -506,7 +506,7 @@ class DashboardComponents {
   }
 }
 
-// ========== INTERNAL CLASSES ==========
+//  INTERNAL CLASSES 
 class _QuickAction {
   final String title;
   final IconData icon;
