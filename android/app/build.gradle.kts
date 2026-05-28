@@ -1,14 +1,16 @@
+```kotlin
 plugins {
     id("com.android.application")
-    id("kotlin-android")
+    id("org.jetbrains.kotlin.android")
     id("dev.flutter.flutter-gradle-plugin")
     id("com.google.gms.google-services")
 }
 
 android {
     namespace = "com.example.sparkle_lite"
-    ndkVersion = "28.2.13676358"
+
     compileSdk = 36
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -21,8 +23,10 @@ android {
 
     defaultConfig {
         applicationId = "com.example.sparkle_lite"
-        minSdk = flutter.minSdkVersion
+
+        minSdk = 23
         targetSdk = 36
+
         versionCode = 1
         versionName = "1.0"
     }
@@ -40,7 +44,9 @@ flutter {
 
 dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.13.0"))
+
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
 }
+```
