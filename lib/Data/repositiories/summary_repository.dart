@@ -37,6 +37,11 @@ class SummaryRepository {
   Future<void> deleteDoctorSummary(String id, String userId) async {
     await databaseService.deleteDoctorSummary(id, userId);
   }
+
+  
+  Future<void> deleteSummary(String id, String userId) async {
+    await databaseService.deleteDoctorSummary(id, userId);
+  }
   
   Future<Map<String, dynamic>> generateSummary({
     required UserModel user,

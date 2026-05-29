@@ -64,4 +64,6 @@ class AppConstants {
   // Theme Settings Route
   static const String routeThemeSettings = '/theme-settings';
 
+  static const String routeProfile = '/profile';
+
 }

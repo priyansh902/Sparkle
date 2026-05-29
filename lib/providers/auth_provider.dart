@@ -120,7 +120,23 @@ class AuthNotifier extends StateNotifier<AuthState> {
     await _authRepository.saveUserProfile(updatedUser);
     state = state.copyWith(user: updatedUser);
   }
+
+  Future<void> deleteAccount() async {
+    state = state.copyWith(isLoading: true, error: null);
+    
+    try {
+      await _authRepository.deleteAccount();
+      state = AuthState.initial;
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+      );
+      rethrow;
+    }
+  }
 }
+
 
 // Provider
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {

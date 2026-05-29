@@ -140,6 +140,8 @@ class InsightNotifier extends StateNotifier<InsightState> {
   void clearCurrentInsight() {
     state = state.copyWith(currentInsight: null);
   }
+
+  
 }
 
 // Provider

@@ -10,6 +10,7 @@ import 'package:sparkle_lite/features/family/family_list_screen.dart';
 import 'package:sparkle_lite/features/health_records/record_detail_screen.dart';
 import 'package:sparkle_lite/features/health_records/records_list_screen.dart';
 import 'package:sparkle_lite/features/health_records/upload_record_screen.dart';
+import 'package:sparkle_lite/features/profile/profile_screen.dart';
 import 'package:sparkle_lite/features/settings/notification_settings_screen.dart';
 import 'package:sparkle_lite/features/settings/privacy_settings_screen.dart';
 import 'package:sparkle_lite/features/symptom_tracker/edit_symptom_screen.dart';
@@ -153,6 +154,10 @@ final GoRouter appRouter = GoRouter(
         name: 'notification-settings',
         builder: (context, state) => const NotificationSettingsScreen(),
       ),
-    
+    GoRoute(
+      path: AppConstants.routeProfile,
+      name: 'profile',
+      builder: (context, state) => const ProfileScreen(),
+    ),
   ],
 );

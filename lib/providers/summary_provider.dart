@@ -133,6 +133,20 @@ class SummaryNotifier extends StateNotifier<SummaryState> {
   void clearCurrentSummary() {
     state = state.copyWith(currentSummary: null);
   }
+
+  Future<bool> deleteSummary(String id) async {
+    if (_userId == null) return false;
+    
+    try {
+      await _repository.deleteSummary(id, _userId!);
+      await loadSummaries();
+      return true;
+    } catch (e) {
+      state = state.copyWith(error: e.toString());
+      return false;
+    }
+  }
+
 }
 
 final summaryProvider = StateNotifierProvider<SummaryNotifier, SummaryState>((ref) {

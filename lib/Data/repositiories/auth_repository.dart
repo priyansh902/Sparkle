@@ -67,4 +67,9 @@ class AuthRepository {
   Future<void> saveUserProfile(UserModel user) async {
     await authService.saveUserProfile(user);
   }
+
+  Future<void> deleteAccount() async {
+    await authService.deleteAccount();
+  }
+  
 }

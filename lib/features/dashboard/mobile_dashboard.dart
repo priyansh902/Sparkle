@@ -36,7 +36,7 @@ class MobileDashboard extends ConsumerWidget {
               children: [
                 // Greeting
                 ResponsiveText(
-                  'Hello, ${user?.name ?? "User"}! Welcome Lady Sparkle! ✨',
+                  '${user?.name ?? "User"}! Welcome Lady Sparkle! ✨',
                   style: const TextStyle(fontWeight: FontWeight.normal),
                 ),
                 const SizedBox(height: 4),
@@ -262,6 +262,8 @@ class MobileDashboard extends ConsumerWidget {
           context.push(AppConstants.routeSymptomHistory);
         } else if (index == 2) {
           context.push(AppConstants.routeRecordsList);
+        } else if(index == 3) {
+          context.push(AppConstants.routeProfile);
         }
       },
     );

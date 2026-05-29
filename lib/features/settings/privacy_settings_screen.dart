@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sparkle_lite/core/constants/app_constants.dart';
+import 'package:sparkle_lite/providers/auth_provider.dart';
 import 'package:sparkle_lite/providers/settings_provider.dart';
 import 'package:sparkle_lite/providers/theme_provider.dart';
 import 'package:sparkle_lite/shared/widgets/primary_button.dart';
@@ -340,13 +343,20 @@ class _PrivacySettingsScreenState extends ConsumerState<PrivacySettingsScreen> {
     );
   }
   
+
   void _showDeleteAccountDialog(BuildContext context) {
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Account'),
         content: const Text(
-          'This action cannot be undone. All your symptoms, records, and health data will be permanently deleted.',
+          '⚠️ WARNING: This action cannot be undone.\n\n'
+          'All your data will be permanently deleted from Firebase:\n'
+          '• Symptoms and health records\n'
+          '• AI insights and doctor summaries\n'
+          '• Family member profiles\n'
+          '• Account information',
         ),
         actions: [
           TextButton(
@@ -354,14 +364,50 @@ class _PrivacySettingsScreenState extends ConsumerState<PrivacySettingsScreen> {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Account deletion is a mock action for this demo')),
+            onPressed: () async {
+              Navigator.pop(context); // Close dialog
+              
+              // Show loading indicator
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
+                      Text('Deleting your account...'),
+                      SizedBox(height: 8),
+                      Text('This may take a moment', style: TextStyle(fontSize: 12)),
+                    ],
+                  ),
+                ),
               );
+              
+              try {
+                // Call Firebase delete account
+                await ref.read(authProvider.notifier).deleteAccount();
+                
+                if (mounted) {
+                  Navigator.pop(context); // Close loading dialog
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Account deleted successfully')),
+                  );
+                  // Redirect to welcome screen
+                  context.go(AppConstants.routeWelcome);
+                }
+              } catch (e) {
+                if (mounted) {
+                  Navigator.pop(context); // Close loading dialog
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error deleting account: ${e.toString().replaceFirst('Exception: ', '')}')),
+                  );
+                }
+              }
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: const Text('Delete Permanently'),
           ),
         ],
       ),

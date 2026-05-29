@@ -192,6 +192,26 @@ class MockAuthService implements AuthInterface {
   Future<void> saveUserProfile(UserModel user) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(AppConstants.keyUserName, user.name);
-    // In a real app, you'd save more profile data
+   
   }
+
+  @override
+  Future<void> deleteAccount() async {
+    // Clear all user data
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString(AppConstants.keyUserId);
+    
+    if (userId != null) {
+      await prefs.remove('${AppConstants.keySymptoms}_$userId');
+      await prefs.remove('${AppConstants.keyHealthRecords}_$userId');
+      await prefs.remove('${AppConstants.keyAIInsights}_$userId');
+      await prefs.remove('${AppConstants.keyDoctorSummaries}_$userId');
+      await prefs.remove('${AppConstants.keyFamilyMembers}_$userId');
+    }
+    
+    await logout();
+  }
+
+
+
 }

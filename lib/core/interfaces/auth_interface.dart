@@ -18,12 +18,20 @@ abstract class AuthInterface {
   });
   
   Future<void> logout();
+
   Future<bool> isLoggedIn();
+
   Future<bool> hasCompletedOnboarding();
+
   Future<void> setOnboardingCompleted(bool completed);
+
   Future<String?> getCurrentUserId();
+
   Future<UserModel?> getCurrentUser();
+
   Future<void> saveUserProfile(UserModel user);
+
+  Future<void> deleteAccount();
 }
 
 /// Result class for authentication operations

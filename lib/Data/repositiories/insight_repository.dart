@@ -40,4 +40,7 @@ class InsightRepository {
     // Use mock AI service (safe, non-diagnostic)
     return MockAIService.generateInsight(symptoms);
   }
+
+  
+
 }
