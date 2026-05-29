@@ -86,6 +86,16 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
+      - name: Print Android Config
+        run: |
+          echo "===== settings.gradle.kts ====="
+          cat android/settings.gradle.kts
+
+          echo "===== build.gradle.kts ====="
+          cat android/build.gradle.kts
+
+          echo "===== app/build.gradle.kts ====="
+          cat android/app/build.gradle.kts
 
       - name: Build APK
         run: flutter build apk --release
