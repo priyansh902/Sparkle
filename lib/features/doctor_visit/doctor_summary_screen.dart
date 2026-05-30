@@ -12,7 +12,6 @@ import 'package:sparkle_lite/shared/widgets/form_text_field.dart';
 /// A screen that generates a doctor visit summary based on recent symptoms, records, and user notes.
 /// This screen allows users to prepare for their doctor visits by creating a comprehensive summary that can be shared with their healthcare provider.
 
-
 class DoctorSummaryScreen extends ConsumerStatefulWidget {
   const DoctorSummaryScreen({super.key});
 
@@ -59,6 +58,7 @@ class _DoctorSummaryScreenState extends ConsumerState<DoctorSummaryScreen> {
   Widget build(BuildContext context) {
     final symptomState = ref.watch(symptomProvider);
     final recordState = ref.watch(recordProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Scaffold(
       appBar: AppBar(
@@ -75,7 +75,7 @@ class _DoctorSummaryScreenState extends ConsumerState<DoctorSummaryScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF7B61FF).withOpacity(0.1),
+                color: const Color(0xFF7B61FF).withOpacity(isDark ? 0.15 : 0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
@@ -96,7 +96,7 @@ class _DoctorSummaryScreenState extends ConsumerState<DoctorSummaryScreen> {
                         const SizedBox(height: 4),
                         Text(
                           'This summary includes your recent symptoms, health records, and generates questions to ask your doctor.',
-                          style: TextStyle(color: Colors.grey[700], fontSize: 13),
+                          style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[700], fontSize: 13),
                         ),
                       ],
                     ),
@@ -116,6 +116,7 @@ class _DoctorSummaryScreenState extends ConsumerState<DoctorSummaryScreen> {
                     '${symptomState.symptoms.length}',
                     Icons.favorite,
                     Colors.red,
+                    isDark,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -125,6 +126,7 @@ class _DoctorSummaryScreenState extends ConsumerState<DoctorSummaryScreen> {
                     '${recordState.records.length}',
                     Icons.folder,
                     const Color(0xFF7B61FF),
+                    isDark,
                   ),
                 ),
               ],
@@ -156,7 +158,7 @@ class _DoctorSummaryScreenState extends ConsumerState<DoctorSummaryScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: isDark ? Colors.grey[800] : Colors.grey[100],
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -166,15 +168,15 @@ class _DoctorSummaryScreenState extends ConsumerState<DoctorSummaryScreen> {
                     'What\'s included:',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
-                      color: Colors.grey[700],
+                      color: isDark ? Colors.grey[400] : Colors.grey[700],
                     ),
                   ),
                   const SizedBox(height: 8),
-                  _buildBulletPoint('Your personal health profile'),
-                  _buildBulletPoint('Recent symptoms (last 30 days)'),
-                  _buildBulletPoint('Uploaded health records'),
-                  _buildBulletPoint('Current medications'),
-                  _buildBulletPoint('Suggested questions for doctor'),
+                  _buildBulletPoint('Your personal health profile', isDark),
+                  _buildBulletPoint('Recent symptoms (last 30 days)', isDark),
+                  _buildBulletPoint('Uploaded health records', isDark),
+                  _buildBulletPoint('Current medications', isDark),
+                  _buildBulletPoint('Suggested questions for doctor', isDark),
                 ],
               ),
             ),
@@ -184,20 +186,20 @@ class _DoctorSummaryScreenState extends ConsumerState<DoctorSummaryScreen> {
     );
   }
   
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
+  Widget _buildStatCard(String title, String value, IconData icon, Color color, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? Colors.grey[850] : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: isDark ? Colors.grey[800]! : Colors.grey[200]!),
       ),
       child: Column(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withOpacity(isDark ? 0.2 : 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: color, size: 24),
@@ -205,27 +207,33 @@ class _DoctorSummaryScreenState extends ConsumerState<DoctorSummaryScreen> {
           const SizedBox(height: 8),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : Colors.black87,
             ),
           ),
           Text(
             title,
-            style: TextStyle(color: Colors.grey[600], fontSize: 12),
+            style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600], fontSize: 12),
           ),
         ],
       ),
     );
   }
   
-  Widget _buildBulletPoint(String text) {
+  Widget _buildBulletPoint(String text, bool isDark) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(
         children: [
-          const Text('• ', style: TextStyle(fontSize: 13)),
-          Expanded(child: Text(text, style: const TextStyle(fontSize: 13))),
+          Text('• ', style: TextStyle(fontSize: 13, color: isDark ? Colors.grey[400] : Colors.grey[700])),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(fontSize: 13, color: isDark ? Colors.grey[300] : Colors.grey[700]),
+            ),
+          ),
         ],
       ),
     );

@@ -11,6 +11,7 @@ import 'package:sparkle_lite/shared/widgets/form_text_field.dart';
 /// This screen allows users to modify the details of a previously logged symptom entry. It pre-populates the form fields with the existing data, allowing users to update the date, period status, flow level, pain level, mood, symptoms, and notes. The screen includes validation to ensure that required fields are filled out correctly before allowing the user to save the changes. When the user saves the updated log, it interacts with the SymptomProvider to update the entry in the database and provides feedback on the success of the operation.
 /// The design of the EditSymptomScreen is consistent with the AddSymptomScreen, maintaining a cohesive user experience. It includes loading indicators and error handling to enhance the user experience during the update operation. Overall, this screen is an essential part of the symptom tracking feature, allowing users to keep their health data accurate and up-to-date as they gain new insights or recall additional details about their symptoms.
 /// The EditSymptomScreen is designed to be flexible and extensible, allowing for future enhancements such as more symptom options, integration with wearable devices for automatic data logging, and enhanced AI insights based on the logged symptoms. The screen also emphasizes user privacy and data security, ensuring that all logged information is stored securely and handled with care.
+
 class EditSymptomScreen extends ConsumerStatefulWidget {
   const EditSymptomScreen({super.key, required this.symptomId});
   final String symptomId;
@@ -101,6 +102,8 @@ class _EditSymptomScreenState extends ConsumerState<EditSymptomScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     if (_isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
@@ -111,7 +114,7 @@ class _EditSymptomScreenState extends ConsumerState<EditSymptomScreen> {
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Symptom'),
+        title: Text('Edit Symptom', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -128,8 +131,11 @@ class _EditSymptomScreenState extends ConsumerState<EditSymptomScreen> {
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: const Icon(Icons.calendar_today, color: Color(0xFF7B61FF)),
-                    title: const Text('Date'),
-                    subtitle: Text(_selectedDate.toString().split(' ')[0]),
+                    title: Text('Date', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+                    subtitle: Text(
+                      _selectedDate.toString().split(' ')[0],
+                      style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
+                    ),
                     onTap: () async {
                       final picked = await showDatePicker(
                         context: context,
@@ -145,20 +151,25 @@ class _EditSymptomScreenState extends ConsumerState<EditSymptomScreen> {
                   const SizedBox(height: 24),
                   
                   // Period Status
-                  const Text('Period Status', style: TextStyle(fontWeight: FontWeight.w600)),
+                  Text('Period Status', style: TextStyle(fontWeight: FontWeight.w600, color: isDark ? Colors.white : Colors.black87)),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
                     children: PeriodStatus.values.map((status) {
+                      final isSelected = _periodStatus == status;
                       return FilterChip(
-                        label: Text(status.toString().split('.').last),
-                        selected: _periodStatus == status,
+                        label: Text(
+                          status.toString().split('.').last,
+                          style: TextStyle(color: isSelected ? Colors.white : (isDark ? Colors.grey[300] : Colors.grey[700])),
+                        ),
+                        selected: isSelected,
                         onSelected: (selected) {
                           setState(() {
                             _periodStatus = selected ? status : PeriodStatus.none;
                           });
                         },
-                        selectedColor: const Color(0xFF7B61FF).withOpacity(0.2),
+                        selectedColor: const Color(0xFF7B61FF),
+                        backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
                       );
                     }).toList(),
                   ),
@@ -166,20 +177,25 @@ class _EditSymptomScreenState extends ConsumerState<EditSymptomScreen> {
                   
                   // Flow Level
                   if (_periodStatus != PeriodStatus.none) ...[
-                    const Text('Flow Level', style: TextStyle(fontWeight: FontWeight.w600)),
+                    Text('Flow Level', style: TextStyle(fontWeight: FontWeight.w600, color: isDark ? Colors.white : Colors.black87)),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
                       children: FlowLevel.values.map((level) {
+                        final isSelected = _flowLevel == level;
                         return ChoiceChip(
-                          label: Text(level.toString().split('.').last),
-                          selected: _flowLevel == level,
+                          label: Text(
+                            level.toString().split('.').last,
+                            style: TextStyle(color: isSelected ? Colors.white : (isDark ? Colors.grey[300] : Colors.grey[700])),
+                          ),
+                          selected: isSelected,
                           onSelected: (selected) {
                             setState(() {
                               _flowLevel = selected ? level : FlowLevel.none;
                             });
                           },
                           selectedColor: const Color(0xFF7B61FF),
+                          backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
                         );
                       }).toList(),
                     ),
@@ -187,7 +203,7 @@ class _EditSymptomScreenState extends ConsumerState<EditSymptomScreen> {
                   ],
                   
                   // Pain Level
-                  const Text('Pain Level (0-10)', style: TextStyle(fontWeight: FontWeight.w600)),
+                  Text('Pain Level (0-10)', style: TextStyle(fontWeight: FontWeight.w600, color: isDark ? Colors.white : Colors.black87)),
                   const SizedBox(height: 8),
                   Row(
                     children: [
@@ -226,28 +242,33 @@ class _EditSymptomScreenState extends ConsumerState<EditSymptomScreen> {
                   const SizedBox(height: 24),
                   
                   // Mood
-                  const Text('Mood', style: TextStyle(fontWeight: FontWeight.w600)),
+                  Text('Mood', style: TextStyle(fontWeight: FontWeight.w600, color: isDark ? Colors.white : Colors.black87)),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
                     children: _moodOptions.map((mood) {
+                      final isSelected = _mood == mood;
                       return FilterChip(
-                        label: Text(mood.toString().split('.').last),
-                        selected: _mood == mood,
+                        label: Text(
+                          mood.toString().split('.').last,
+                          style: TextStyle(color: isSelected ? Colors.white : (isDark ? Colors.grey[300] : Colors.grey[700])),
+                        ),
+                        selected: isSelected,
                         onSelected: (selected) {
                           setState(() {
                             _mood = selected ? mood : Mood.calm;
                           });
                         },
-                        selectedColor: const Color(0xFF7B61FF).withOpacity(0.2),
+                        selectedColor: const Color(0xFF7B61FF),
+                        backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
                       );
                     }).toList(),
                   ),
                   const SizedBox(height: 24),
                   
                   // Symptoms
-                  const Text('Symptoms', style: TextStyle(fontWeight: FontWeight.w600)),
+                  Text('Symptoms', style: TextStyle(fontWeight: FontWeight.w600, color: isDark ? Colors.white : Colors.black87)),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
@@ -255,7 +276,7 @@ class _EditSymptomScreenState extends ConsumerState<EditSymptomScreen> {
                     children: _availableSymptoms.map((symptom) {
                       final isSelected = _selectedSymptoms.contains(symptom);
                       return FilterChip(
-                        label: Text(symptom),
+                        label: Text(symptom, style: TextStyle(color: isDark ? Colors.grey[300] : Colors.grey[700])),
                         selected: isSelected,
                         onSelected: (selected) {
                           setState(() {
@@ -267,6 +288,7 @@ class _EditSymptomScreenState extends ConsumerState<EditSymptomScreen> {
                           });
                         },
                         selectedColor: const Color(0xFF7B61FF).withOpacity(0.2),
+                        backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
                         checkmarkColor: const Color(0xFF7B61FF),
                       );
                     }).toList(),

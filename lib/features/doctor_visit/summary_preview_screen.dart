@@ -7,7 +7,6 @@ import 'package:sparkle_lite/shared/widgets/primary_button.dart';
 
 /// Screen to preview the generated doctor visit summary before saving or sharing
 /// This screen shows the summary text, questions for the doctor, recent symptoms, and health records.
-
 class SummaryPreviewScreen extends ConsumerWidget {
   const SummaryPreviewScreen({super.key});
 
@@ -15,6 +14,7 @@ class SummaryPreviewScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final summaryState = ref.watch(summaryProvider);
     final summary = summaryState.currentSummary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     
     if (summaryState.isGenerating) {
       return Scaffold(
@@ -46,7 +46,7 @@ class SummaryPreviewScreen extends ConsumerWidget {
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.close),
+            icon: Icon(Icons.close, color: isDark ? Colors.white : Colors.black87),
             onPressed: () {
               ref.read(summaryProvider.notifier).clearCurrentSummary();
               context.pop();
@@ -63,7 +63,7 @@ class SummaryPreviewScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF7B61FF).withOpacity(0.1),
+                color: const Color(0xFF7B61FF).withOpacity(isDark ? 0.15 : 0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
@@ -76,12 +76,12 @@ class SummaryPreviewScreen extends ConsumerWidget {
                       children: [
                         Text(
                           'Generated: ${_formatDateTime(summary['generatedDate'])}',
-                          style: const TextStyle(fontSize: 12),
+                          style: TextStyle(fontSize: 12, color: isDark ? Colors.grey[400] : Colors.grey[600]),
                         ),
                         const SizedBox(height: 4),
-                        const Text(
+                        Text(
                           'Share this summary with your doctor',
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                          style: TextStyle(fontSize: 12, color: isDark ? Colors.grey[500] : Colors.grey),
                         ),
                       ],
                     ),
@@ -95,22 +95,27 @@ class SummaryPreviewScreen extends ConsumerWidget {
             // Summary text
             Card(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              color: isDark ? Colors.grey[850] : Colors.white,
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Summary',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
+                        color: isDark ? Colors.white : Colors.black87,
                       ),
                     ),
                     const SizedBox(height: 12),
                     Text(
                       summary['summaryText'],
-                      style: const TextStyle(height: 1.6),
+                      style: TextStyle(
+                        height: 1.6,
+                        color: isDark ? Colors.grey[300] : Colors.grey[800],
+                      ),
                     ),
                   ],
                 ),
@@ -122,16 +127,18 @@ class SummaryPreviewScreen extends ConsumerWidget {
             // Questions for doctor
             Card(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              color: isDark ? Colors.grey[850] : Colors.white,
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Questions for Your Doctor',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
+                        color: isDark ? Colors.white : Colors.black87,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -140,8 +147,13 @@ class SummaryPreviewScreen extends ConsumerWidget {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('• ', style: TextStyle(fontSize: 14)),
-                          Expanded(child: Text(q)),
+                          Text('• ', style: TextStyle(fontSize: 14, color: isDark ? Colors.grey[400] : Colors.grey[700])),
+                          Expanded(
+                            child: Text(
+                              q,
+                              style: TextStyle(color: isDark ? Colors.grey[300] : Colors.grey[700]),
+                            ),
+                          ),
                         ],
                       ),
                     )),
@@ -156,22 +168,27 @@ class SummaryPreviewScreen extends ConsumerWidget {
             if ((summary['recentSymptoms'] as List).isNotEmpty)
               Card(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                color: isDark ? Colors.grey[850] : Colors.white,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Recent Symptoms',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
+                          color: isDark ? Colors.white : Colors.black87,
                         ),
                       ),
                       const SizedBox(height: 12),
                       ...(summary['recentSymptoms'] as List).map((s) => Padding(
                         padding: const EdgeInsets.only(bottom: 6),
-                        child: Text('• $s', style: const TextStyle(fontSize: 13)),
+                        child: Text(
+                          '• $s',
+                          style: TextStyle(fontSize: 13, color: isDark ? Colors.grey[400] : Colors.grey[600]),
+                        ),
                       )),
                     ],
                   ),
@@ -184,22 +201,27 @@ class SummaryPreviewScreen extends ConsumerWidget {
             if ((summary['recentRecords'] as List).isNotEmpty)
               Card(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                color: isDark ? Colors.grey[850] : Colors.white,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Recent Health Records',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
+                          color: isDark ? Colors.white : Colors.black87,
                         ),
                       ),
                       const SizedBox(height: 12),
                       ...(summary['recentRecords'] as List).map((r) => Padding(
                         padding: const EdgeInsets.only(bottom: 6),
-                        child: Text('• $r', style: const TextStyle(fontSize: 13)),
+                        child: Text(
+                          '• $r',
+                          style: TextStyle(fontSize: 13, color: isDark ? Colors.grey[400] : Colors.grey[600]),
+                        ),
                       )),
                     ],
                   ),
@@ -221,6 +243,7 @@ class SummaryPreviewScreen extends ConsumerWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
+                      side: BorderSide(color: isDark ? Colors.grey[600]! : Colors.grey[400]!),
                     ),
                   ),
                 ),
@@ -242,7 +265,7 @@ class SummaryPreviewScreen extends ConsumerWidget {
                   ref.read(summaryProvider.notifier).clearCurrentSummary();
                   context.pop();
                 },
-                child: const Text('Regenerate'),
+                child: Text('Regenerate', style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600])),
               ),
             ),
           ],

@@ -83,6 +83,8 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Health Profile'),
@@ -100,12 +102,13 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
                 'Let\'s personalize your experience',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : Colors.black87,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 'This information helps us provide relevant insights',
-                style: TextStyle(color: Colors.grey[600]),
+                style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
               ),
               const SizedBox(height: 32),
               
@@ -115,7 +118,7 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
-                  color: Colors.grey[800],
+                  color: isDark ? Colors.white : Colors.grey[800],
                 ),
               ),
               const SizedBox(height: 12),
@@ -132,8 +135,11 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
                       });
                     },
                     selectedColor: const Color(0xFF7B61FF),
+                    backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
                     labelStyle: TextStyle(
-                      color: isSelected ? Colors.white : Colors.grey[700],
+                      color: isSelected 
+                          ? Colors.white 
+                          : (isDark ? Colors.grey[300] : Colors.grey[700]),
                     ),
                   );
                 }).toList(),
@@ -146,7 +152,7 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
-                  color: Colors.grey[800],
+                  color: isDark ? Colors.white : Colors.grey[800],
                 ),
               ),
               const SizedBox(height: 12),
@@ -165,8 +171,11 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
                       });
                     },
                     selectedColor: const Color(0xFF7B61FF),
+                    backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
                     labelStyle: TextStyle(
-                      color: isSelected ? Colors.white : Colors.grey[700],
+                      color: isSelected 
+                          ? Colors.white 
+                          : (isDark ? Colors.grey[300] : Colors.grey[700]),
                     ),
                   );
                 }).toList(),
@@ -179,7 +188,7 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
-                  color: Colors.grey[800],
+                  color: isDark ? Colors.white : Colors.grey[800],
                 ),
               ),
               const SizedBox(height: 12),
@@ -197,8 +206,11 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
                       });
                     },
                     selectedColor: const Color(0xFF7B61FF),
+                    backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
                     labelStyle: TextStyle(
-                      color: isSelected ? Colors.white : Colors.grey[700],
+                      color: isSelected 
+                          ? Colors.white 
+                          : (isDark ? Colors.grey[300] : Colors.grey[700]),
                     ),
                   );
                 }).toList(),
@@ -211,7 +223,7 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
-                  color: Colors.grey[800],
+                  color: isDark ? Colors.white : Colors.grey[800],
                 ),
               ),
               const SizedBox(height: 12),
@@ -233,7 +245,13 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
                       });
                     },
                     selectedColor: const Color(0xFF7B61FF).withOpacity(0.2),
+                    backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
                     checkmarkColor: const Color(0xFF7B61FF),
+                    labelStyle: TextStyle(
+                      color: isSelected 
+                          ? const Color(0xFF7B61FF)
+                          : (isDark ? Colors.grey[300] : Colors.grey[700]),
+                    ),
                   );
                 }).toList(),
               ),
@@ -243,17 +261,20 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.blue[50],
+                  color: isDark ? Colors.blue[900]?.withOpacity(0.3) : Colors.blue[50],
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.shield_outlined, color: Colors.blue[700]),
+                    Icon(Icons.shield_outlined, color: isDark ? Colors.blue[300] : Colors.blue[700]),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         'Your health data is private and will never be shared without your consent',
-                        style: TextStyle(color: Colors.blue[800], fontSize: 13),
+                        style: TextStyle(
+                          color: isDark ? Colors.blue[300] : Colors.blue[800],
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                   ],

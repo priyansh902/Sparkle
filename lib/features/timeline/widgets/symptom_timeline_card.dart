@@ -18,10 +18,12 @@ class SymptomTimelineCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final symptomData = item.data['symptom'];
     final symptom = SymptomLog.fromJson(symptomData);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: isDark ? Colors.grey[850] : Colors.white,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
@@ -37,16 +39,17 @@ class SymptomTimelineCard extends StatelessWidget {
                   children: [
                     Text(
                       _getDay(item.date),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white : Colors.black87,
                       ),
                     ),
                     Text(
                       _getMonth(item.date),
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey[600],
+                        color: isDark ? Colors.grey[400] : Colors.grey[600],
                       ),
                     ),
                   ],
@@ -74,9 +77,10 @@ class SymptomTimelineCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             item.title,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 16,
+                              color: isDark ? Colors.white : Colors.black87,
                             ),
                           ),
                         ),
@@ -84,8 +88,8 @@ class SymptomTimelineCard extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: symptom.painLevel >= 7 
-                                ? Colors.red.withOpacity(0.1) 
-                                : const Color(0xFF7B61FF).withOpacity(0.1),
+                                ? Colors.red.withOpacity(0.2) 
+                                : const Color(0xFF7B61FF).withOpacity(0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -102,7 +106,7 @@ class SymptomTimelineCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       'Mood: ${symptom.mood.toString().split('.').last}',
-                      style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                      style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600], fontSize: 13),
                     ),
                     const SizedBox(height: 4),
                     Wrap(
@@ -110,12 +114,12 @@ class SymptomTimelineCard extends StatelessWidget {
                       children: symptom.symptoms.take(3).map((s) => Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: Colors.grey[200],
+                          color: isDark ? Colors.grey[800] : Colors.grey[200],
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           s,
-                          style: const TextStyle(fontSize: 11),
+                          style: TextStyle(fontSize: 11, color: isDark ? Colors.grey[300] : Colors.grey[700]),
                         ),
                       )).toList(),
                     ),
@@ -123,7 +127,7 @@ class SymptomTimelineCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         symptom.notes!,
-                        style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                        style: TextStyle(color: isDark ? Colors.grey[500] : Colors.grey[500], fontSize: 12),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),

@@ -18,10 +18,12 @@ class InsightTimelineCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final insightData = item.data['insight'];
     final insight = AIInsight.fromJson(insightData);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: isDark ? Colors.grey[850] : Colors.white,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
@@ -37,16 +39,17 @@ class InsightTimelineCard extends StatelessWidget {
                   children: [
                     Text(
                       _getDay(item.date),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white : Colors.black87,
                       ),
                     ),
                     Text(
                       _getMonth(item.date),
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey[600],
+                        color: isDark ? Colors.grey[400] : Colors.grey[600],
                       ),
                     ),
                   ],
@@ -71,9 +74,10 @@ class InsightTimelineCard extends StatelessWidget {
                   children: [
                     Text(
                       item.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
+                        color: isDark ? Colors.white : Colors.black87,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -81,7 +85,7 @@ class InsightTimelineCard extends StatelessWidget {
                       insight.summary.length > 100 
                           ? '${insight.summary.substring(0, 100)}...' 
                           : insight.summary,
-                      style: TextStyle(color: Colors.grey[700], fontSize: 13),
+                      style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[700], fontSize: 13),
                     ),
                     const SizedBox(height: 4),
                     Container(
@@ -103,7 +107,7 @@ class InsightTimelineCard extends StatelessWidget {
                 ),
               ),
               
-              Icon(Icons.chevron_right, color: Colors.grey[400]),
+              Icon(Icons.chevron_right, color: isDark ? Colors.grey[600] : Colors.grey[400]),
             ],
           ),
         ),

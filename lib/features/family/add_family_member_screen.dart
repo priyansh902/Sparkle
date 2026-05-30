@@ -76,6 +76,8 @@ class _AddFamilyMemberScreenState extends ConsumerState<AddFamilyMemberScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Family Member'),
@@ -93,17 +95,20 @@ class _AddFamilyMemberScreenState extends ConsumerState<AddFamilyMemberScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.blue[50],
+                  color: isDark ? Colors.blue[900]?.withOpacity(0.3) : Colors.blue[50],
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.family_restroom, color: Colors.blue[700]),
+                    Icon(Icons.family_restroom, color: isDark ? Colors.blue[300] : Colors.blue[700]),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         'Family member data is kept separate from your personal health records for privacy.',
-                        style: TextStyle(color: Colors.blue[800], fontSize: 12),
+                        style: TextStyle(
+                          color: isDark ? Colors.blue[300] : Colors.blue[800],
+                          fontSize: 12,
+                        ),
                       ),
                     ),
                   ],
@@ -135,7 +140,13 @@ class _AddFamilyMemberScreenState extends ConsumerState<AddFamilyMemberScreen> {
               const SizedBox(height: 16),
               
               // Relationship
-              const Text('Relationship', style: TextStyle(fontWeight: FontWeight.w600)),
+              Text(
+                'Relationship',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
+              ),
               const SizedBox(height: 8),
               DropdownButtonFormField<Relationship>(
                 value: _selectedRelationship,
@@ -144,12 +155,18 @@ class _AddFamilyMemberScreenState extends ConsumerState<AddFamilyMemberScreen> {
                     borderRadius: BorderRadius.all(Radius.circular(12)),
                   ),
                   filled: true,
-                  fillColor: Colors.grey[50],
+                  fillColor: isDark ? Colors.grey[800] : Colors.grey[50],
+                  labelStyle: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
                 ),
+                dropdownColor: isDark ? Colors.grey[800] : Colors.white,
+                style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                 items: Relationship.values.map((rel) {
                   return DropdownMenuItem(
                     value: rel,
-                    child: Text(rel.displayName),  // ✅ Now works with extension
+                    child: Text(
+                      rel.displayName,
+                      style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+                    ),
                   );
                 }).toList(),
                 onChanged: (value) {
@@ -161,7 +178,13 @@ class _AddFamilyMemberScreenState extends ConsumerState<AddFamilyMemberScreen> {
               const SizedBox(height: 16),
               
               // Age Range
-              const Text('Age Range', style: TextStyle(fontWeight: FontWeight.w600)),
+              Text(
+                'Age Range',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
+              ),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
                 value: _selectedAgeRange,
@@ -170,12 +193,18 @@ class _AddFamilyMemberScreenState extends ConsumerState<AddFamilyMemberScreen> {
                     borderRadius: BorderRadius.all(Radius.circular(12)),
                   ),
                   filled: true,
-                  fillColor: Colors.grey[50],
+                  fillColor: isDark ? Colors.grey[800] : Colors.grey[50],
+                  labelStyle: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
                 ),
+                dropdownColor: isDark ? Colors.grey[800] : Colors.white,
+                style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                 items: _ageRanges.map((range) {
                   return DropdownMenuItem(
                     value: range,
-                    child: Text(range),
+                    child: Text(
+                      range,
+                      style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+                    ),
                   );
                 }).toList(),
                 onChanged: (value) {

@@ -10,32 +10,34 @@ import 'package:sparkle_lite/shared/widgets/loading_widget.dart';
 /// SymptomHistoryScreen displays a list of all logged symptoms with options to view details, edit, or delete each entry. It also includes a button to add new symptom logs and handles empty states and loading states gracefully.
 /// The screen uses a ListView to display symptom entries in a card format, showing key details like date, pain level, period status, and symptoms. Each card is tappable, allowing users to view more details or edit the entry. The screen also includes a Dismissible widget for easy deletion of entries with confirmation dialogs to prevent accidental deletions. The UI is designed to be clean and user-friendly, with clear calls to action and feedback for user interactions.
 /// The SymptomHistoryScreen interacts with the SymptomProvider to fetch and manage symptom data, ensuring that the UI stays in sync with the underlying data state. It also includes error handling to display appropriate messages if there are issues loading or managing symptom logs. Overall, this screen is a crucial part of the symptom tracking feature, providing users with a comprehensive view of their health data and empowering them to take control of their health journey.
+
 class SymptomHistoryScreen extends ConsumerWidget {
   const SymptomHistoryScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final symptomState = ref.watch(symptomProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Symptom History'),
+        title: Text('Symptom History', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
+            icon: Icon(Icons.add, color: isDark ? Colors.white : Colors.black87),
             onPressed: () {
               context.push(AppConstants.routeAddSymptom);
             },
           ),
         ],
       ),
-      body: _buildBody(context, ref, symptomState),
+      body: _buildBody(context, ref, symptomState, isDark),
     );
   }
   
-  Widget _buildBody(BuildContext context, WidgetRef ref, SymptomState state) {
+  Widget _buildBody(BuildContext context, WidgetRef ref, SymptomState state, bool isDark) {
     if (state.isLoading) {
       return const LoadingWidget(message: 'Loading symptoms...');
     }
@@ -47,7 +49,7 @@ class SymptomHistoryScreen extends ConsumerWidget {
           children: [
             const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
-            Text(state.error!),
+            Text(state.error!, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => ref.read(symptomProvider.notifier).loadSymptoms(),
@@ -75,15 +77,16 @@ class SymptomHistoryScreen extends ConsumerWidget {
       itemCount: state.symptoms.length,
       itemBuilder: (context, index) {
         final symptom = state.symptoms[index];
-        return _buildSymptomCard(context, ref, symptom);
+        return _buildSymptomCard(context, ref, symptom, isDark);
       },
     );
   }
   
-  Widget _buildSymptomCard(BuildContext context, WidgetRef ref, SymptomLog symptom) {
+  Widget _buildSymptomCard(BuildContext context, WidgetRef ref, SymptomLog symptom, bool isDark) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: isDark ? Colors.grey[850] : Colors.white,
       child: Dismissible(
         key: Key(symptom.id),
         background: Container(
@@ -98,7 +101,8 @@ class SymptomHistoryScreen extends ConsumerWidget {
             context: context,
             builder: (context) => AlertDialog(
               title: const Text('Delete Symptom'),
-              content: const Text('Are you sure you want to delete this symptom log?'),
+              backgroundColor: isDark ? Colors.grey[850] : Colors.white,
+              content: Text('Are you sure you want to delete this symptom log?', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context, false),
@@ -137,15 +141,16 @@ class SymptomHistoryScreen extends ConsumerWidget {
                   children: [
                     Text(
                       _formatDate(symptom.date),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
+                        color: isDark ? Colors.white : Colors.black87,
                       ),
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: symptom.painLevel >= 7 ? Colors.red.withOpacity(0.1) : const Color(0xFF7B61FF).withOpacity(0.1),
+                        color: symptom.painLevel >= 7 ? Colors.red.withOpacity(0.2) : const Color(0xFF7B61FF).withOpacity(0.2),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -163,26 +168,22 @@ class SymptomHistoryScreen extends ConsumerWidget {
                 if (symptom.periodStatus.toString().split('.').last != 'none')
                   Chip(
                     label: Text('Period: ${symptom.periodStatus.toString().split('.').last}'),
-                    backgroundColor: const Color(0xFFFF6B6B).withOpacity(0.1),
-                    labelStyle: const TextStyle(fontSize: 12),
+                    backgroundColor: const Color(0xFFFF6B6B).withOpacity(0.2),
+                    labelStyle: TextStyle(fontSize: 12, color: isDark ? Colors.white : Colors.black87),
                   ),
                 const SizedBox(height: 8),
-                // ✅ FIXED: Wrap with SizedBox to ensure proper typing
-                SizedBox(
-                  child: Wrap(
-                    spacing: 8,
-                    children: symptom.symptoms.map((s) => Chip(
-                      label: Text(s),
-                      backgroundColor: Colors.grey[200],
-                      labelStyle: const TextStyle(fontSize: 12),
-                    )).toList(),
-                  ),
+                Wrap(
+                  spacing: 8,
+                  children: symptom.symptoms.map((s) => Chip(
+                    label: Text(s, style: TextStyle(color: isDark ? Colors.grey[300] : Colors.grey[700])),
+                    backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
+                  )).toList(),
                 ),
                 if (symptom.notes != null && symptom.notes!.isNotEmpty) ...[
                   const SizedBox(height: 8),
                   Text(
                     symptom.notes!,
-                    style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                    style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600], fontSize: 13),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),

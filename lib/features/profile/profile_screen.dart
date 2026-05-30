@@ -121,6 +121,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           'Are you sure? This action cannot be undone. '
           'All your symptoms, health records, family data, and insights will be permanently deleted.',
         ),
+        backgroundColor: Theme.of(context).brightness == Brightness.dark ? Colors.grey[850] : Colors.white,
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -217,13 +218,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? 'Edit Profile' : 'Profile'),
+        title: Text(
+          _isEditing ? 'Edit Profile' : 'Profile',
+          style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
           if (!_isEditing)
             IconButton(
-              icon: const Icon(Icons.edit),
+              icon: Icon(Icons.edit, color: isDark ? Colors.white : Colors.black87),
               onPressed: () => setState(() => _isEditing = true),
             ),
         ],
@@ -258,40 +262,42 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         const SizedBox(height: 24),
         
         // Name
-        _buildInfoRow('Name', user?.name ?? 'Not set'),
-        const Divider(),
+        _buildInfoRow('Name', user?.name ?? 'Not set', isDark),
+        Divider(color: isDark ? Colors.grey[800] : Colors.grey[200]),
         
         // Nickname
-        _buildInfoRow('Nickname', user?.nickname ?? 'Not set'),
-        const Divider(),
+        _buildInfoRow('Nickname', user?.nickname ?? 'Not set', isDark),
+        Divider(color: isDark ? Colors.grey[800] : Colors.grey[200]),
         
         // Email
-        _buildInfoRow('Email', user?.email ?? 'Not set'),
-        const Divider(),
+        _buildInfoRow('Email', user?.email ?? 'Not set', isDark),
+        Divider(color: isDark ? Colors.grey[800] : Colors.grey[200]),
         
         // Age Range
-        _buildInfoRow('Age Range', user?.ageRange ?? 'Not set'),
-        const Divider(),
+        _buildInfoRow('Age Range', user?.ageRange ?? 'Not set', isDark),
+        Divider(color: isDark ? Colors.grey[800] : Colors.grey[200]),
         
         // Life Stage
-        _buildInfoRow('Life Stage', _getLifeStageLabel(user?.lifeStage)),
-        const Divider(),
+        _buildInfoRow('Life Stage', _getLifeStageLabel(user?.lifeStage), isDark),
+        Divider(color: isDark ? Colors.grey[800] : Colors.grey[200]),
         
         // Cycle Status
-        _buildInfoRow('Cycle Status', _getCycleStatusLabel(user?.cycleStatus)),
-        const Divider(),
+        _buildInfoRow('Cycle Status', _getCycleStatusLabel(user?.cycleStatus), isDark),
+        Divider(color: isDark ? Colors.grey[800] : Colors.grey[200]),
         
         // Conditions
         _buildInfoRow(
           'Conditions',
           user?.conditions.isEmpty == true ? 'None' : user?.conditions.join(', '),
+          isDark,
         ),
-        const Divider(),
+        Divider(color: isDark ? Colors.grey[800] : Colors.grey[200]),
         
         // Medications
         _buildInfoRow(
           'Medications',
           user?.medications.isEmpty == true ? 'None' : user?.medications.join(', '),
+          isDark,
         ),
         
         const SizedBox(height: 32),
@@ -317,7 +323,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildInfoRow(String label, String? value) {
+  Widget _buildInfoRow(String label, String? value, bool isDark) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
@@ -327,13 +333,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             width: 120,
             child: Text(
               label,
-              style: const TextStyle(fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
             ),
           ),
           Expanded(
             child: Text(
               value ?? 'Not set',
-              style: TextStyle(color: Colors.grey[600]),
+              style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
             ),
           ),
         ],
@@ -368,57 +377,89 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         const SizedBox(height: 16),
         
         // Life Stage
-        const Text('Life Stage', style: TextStyle(fontWeight: FontWeight.w600)),
+        Text(
+          'Life Stage',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
           runSpacing: 8,
           children: _lifeStages.map((stage) {
+            final isSelected = _selectedLifeStage == stage;
             return FilterChip(
-              label: Text(_getLifeStageLabel(stage)),
-              selected: _selectedLifeStage == stage,
+              label: Text(
+                _getLifeStageLabel(stage),
+                style: TextStyle(color: isSelected ? Colors.white : (isDark ? Colors.grey[300] : Colors.grey[700])),
+              ),
+              selected: isSelected,
               onSelected: (selected) {
                 setState(() {
                   _selectedLifeStage = selected ? stage : LifeStage.generalWellness;
                 });
               },
-              selectedColor: const Color(0xFF7B61FF).withOpacity(0.2),
+              selectedColor: const Color(0xFF7B61FF),
+              backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
             );
           }).toList(),
         ),
         const SizedBox(height: 16),
         
         // Cycle Status
-        const Text('Cycle Status', style: TextStyle(fontWeight: FontWeight.w600)),
+        Text(
+          'Cycle Status',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
           runSpacing: 8,
           children: _cycleStatuses.map((status) {
+            final isSelected = _selectedCycleStatus == status;
             return FilterChip(
-              label: Text(_getCycleStatusLabel(status)),
-              selected: _selectedCycleStatus == status,
+              label: Text(
+                _getCycleStatusLabel(status),
+                style: TextStyle(color: isSelected ? Colors.white : (isDark ? Colors.grey[300] : Colors.grey[700])),
+              ),
+              selected: isSelected,
               onSelected: (selected) {
                 setState(() {
                   _selectedCycleStatus = selected ? status : CycleStatus.notSure;
                 });
               },
-              selectedColor: const Color(0xFF7B61FF).withOpacity(0.2),
+              selectedColor: const Color(0xFF7B61FF),
+              backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
             );
           }).toList(),
         ),
         const SizedBox(height: 16),
         
         // Conditions
-        const Text('Known Conditions', style: TextStyle(fontWeight: FontWeight.w600)),
+        Text(
+          'Known Conditions',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
           runSpacing: 8,
           children: _commonConditions.map((condition) {
+            final isSelected = _selectedConditions.contains(condition);
             return FilterChip(
-              label: Text(condition),
-              selected: _selectedConditions.contains(condition),
+              label: Text(
+                condition,
+                style: TextStyle(color: isDark ? Colors.grey[300] : Colors.grey[700]),
+              ),
+              selected: isSelected,
               onSelected: (selected) {
                 setState(() {
                   if (selected) {
@@ -429,6 +470,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 });
               },
               selectedColor: const Color(0xFF7B61FF).withOpacity(0.2),
+              backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
             );
           }).toList(),
         ),
@@ -445,8 +487,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
+                  side: BorderSide(color: isDark ? Colors.grey[600]! : Colors.grey[400]!),
                 ),
-                child: const Text('Cancel'),
+                child: Text('Cancel', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
               ),
             ),
             const SizedBox(width: 16),

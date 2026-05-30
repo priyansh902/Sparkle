@@ -7,6 +7,9 @@ import 'package:sparkle_lite/providers/settings_provider.dart';
 import 'package:sparkle_lite/providers/theme_provider.dart';
 import 'package:sparkle_lite/shared/widgets/primary_button.dart';
 
+/// A screen for managing privacy settings, including dashboard details, notification text, sharing preferences, and data analytics options.
+/// This screen allows users to control how their health data is displayed and shared, with a focus on privacy and user control. It also includes a "Danger Zone" for account deletion and data export options. 
+
 class PrivacySettingsScreen extends ConsumerStatefulWidget {
   const PrivacySettingsScreen({super.key});
 
@@ -58,7 +61,6 @@ class _PrivacySettingsScreenState extends ConsumerState<PrivacySettingsScreen> {
 
   Future<void> _setThemeMode(ThemeModeType mode) async {
     await ref.read(themeProvider.notifier).setThemeMode(mode);
-    // Force rebuild of the app by triggering a state change
     setState(() {});
   }
 
@@ -75,7 +77,7 @@ class _PrivacySettingsScreenState extends ConsumerState<PrivacySettingsScreen> {
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Privacy Settings'),
+        title: Text('Privacy Settings', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -113,8 +115,8 @@ class _PrivacySettingsScreenState extends ConsumerState<PrivacySettingsScreen> {
               isDark: isDark,
               children: [
                 SwitchListTile(
-                  title: const Text('Hide sensitive dashboard details'),
-                  subtitle: const Text('Show generic text instead of specific health information'),
+                  title: Text('Hide sensitive dashboard details', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+                  subtitle: Text('Show generic text instead of specific health information', style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600])),
                   value: _hideDashboardDetails,
                   onChanged: (value) {
                     setState(() => _hideDashboardDetails = value);
@@ -133,8 +135,8 @@ class _PrivacySettingsScreenState extends ConsumerState<PrivacySettingsScreen> {
               isDark: isDark,
               children: [
                 SwitchListTile(
-                  title: const Text('Use generic notification text'),
-                  subtitle: const Text('Example: "You have a health reminder" instead of specific medication reminders'),
+                  title: Text('Use generic notification text', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+                  subtitle: Text('Example: "You have a health reminder" instead of specific medication reminders', style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600])),
                   value: _genericNotifications,
                   onChanged: (value) {
                     setState(() => _genericNotifications = value);
@@ -158,8 +160,8 @@ class _PrivacySettingsScreenState extends ConsumerState<PrivacySettingsScreen> {
               isDark: isDark,
               children: [
                 SwitchListTile(
-                  title: const Text('Require confirmation before sharing records'),
-                  subtitle: const Text('Ask for confirmation when sharing health data'),
+                  title: Text('Require confirmation before sharing records', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+                  subtitle: Text('Ask for confirmation when sharing health data', style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600])),
                   value: _requireConfirmation,
                   onChanged: (value) {
                     setState(() => _requireConfirmation = value);
@@ -168,8 +170,8 @@ class _PrivacySettingsScreenState extends ConsumerState<PrivacySettingsScreen> {
                   contentPadding: EdgeInsets.zero,
                 ),
                 SwitchListTile(
-                  title: const Text('Enable family profile access'),
-                  subtitle: const Text('Allow family members to view your health data'),
+                  title: Text('Enable family profile access', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+                  subtitle: Text('Allow family members to view your health data', style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600])),
                   value: _enableFamilyAccess,
                   onChanged: (value) {
                     setState(() => _enableFamilyAccess = value);
@@ -188,8 +190,8 @@ class _PrivacySettingsScreenState extends ConsumerState<PrivacySettingsScreen> {
               isDark: isDark,
               children: [
                 SwitchListTile(
-                  title: const Text('Allow anonymous analytics'),
-                  subtitle: const Text('Help improve the app by sharing anonymous usage data'),
+                  title: Text('Allow anonymous analytics', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+                  subtitle: Text('Help improve the app by sharing anonymous usage data', style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600])),
                   value: _allowAnalytics,
                   onChanged: (value) {
                     setState(() => _allowAnalytics = value);
@@ -343,13 +345,14 @@ class _PrivacySettingsScreenState extends ConsumerState<PrivacySettingsScreen> {
     );
   }
   
-
   void _showDeleteAccountDialog(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Account'),
+        backgroundColor: isDark ? Colors.grey[850] : Colors.white,
         content: const Text(
           '⚠️ WARNING: This action cannot be undone.\n\n'
           'All your data will be permanently deleted from Firebase:\n'
@@ -365,41 +368,38 @@ class _PrivacySettingsScreenState extends ConsumerState<PrivacySettingsScreen> {
           ),
           TextButton(
             onPressed: () async {
-              Navigator.pop(context); // Close dialog
+              Navigator.pop(context);
               
-              // Show loading indicator
               showDialog(
                 context: context,
                 barrierDismissible: false,
-                builder: (context) => const Center(
+                builder: (context) => Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CircularProgressIndicator(),
-                      SizedBox(height: 16),
-                      Text('Deleting your account...'),
-                      SizedBox(height: 8),
-                      Text('This may take a moment', style: TextStyle(fontSize: 12)),
+                      const CircularProgressIndicator(),
+                      const SizedBox(height: 16),
+                      Text('Deleting your account...', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+                      const SizedBox(height: 8),
+                      Text('This may take a moment', style: TextStyle(fontSize: 12, color: isDark ? Colors.grey[400] : Colors.grey[600])),
                     ],
                   ),
                 ),
               );
               
               try {
-                // Call Firebase delete account
                 await ref.read(authProvider.notifier).deleteAccount();
                 
                 if (mounted) {
-                  Navigator.pop(context); // Close loading dialog
+                  Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Account deleted successfully')),
                   );
-                  // Redirect to welcome screen
                   context.go(AppConstants.routeWelcome);
                 }
               } catch (e) {
                 if (mounted) {
-                  Navigator.pop(context); // Close loading dialog
+                  Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Error deleting account: ${e.toString().replaceFirst('Exception: ', '')}')),
                   );
@@ -415,11 +415,17 @@ class _PrivacySettingsScreenState extends ConsumerState<PrivacySettingsScreen> {
   }
   
   void _showExportDialog(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Export Data'),
-        content: const Text('Your data export will be prepared and downloaded shortly.'),
+        backgroundColor: isDark ? Colors.grey[850] : Colors.white,
+        content: Text(
+          'Your data export will be prepared and downloaded shortly.',
+          style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

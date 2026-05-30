@@ -93,10 +93,11 @@ class _AddSymptomScreenState extends ConsumerState<AddSymptomScreen> {
   @override
   Widget build(BuildContext context) {
     final symptomState = ref.watch(symptomProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Log Symptom'),
+        title: Text('Log Symptom', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -113,8 +114,11 @@ class _AddSymptomScreenState extends ConsumerState<AddSymptomScreen> {
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: const Icon(Icons.calendar_today, color: Color(0xFF7B61FF)),
-                    title: const Text('Date'),
-                    subtitle: Text(_selectedDate.toString().split(' ')[0]),
+                    title: Text('Date', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+                    subtitle: Text(
+                      _selectedDate.toString().split(' ')[0],
+                      style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
+                    ),
                     onTap: () async {
                       final picked = await showDatePicker(
                         context: context,
@@ -130,20 +134,25 @@ class _AddSymptomScreenState extends ConsumerState<AddSymptomScreen> {
                   const SizedBox(height: 24),
                   
                   // Period Status
-                  const Text('Period Status', style: TextStyle(fontWeight: FontWeight.w600)),
+                  Text('Period Status', style: TextStyle(fontWeight: FontWeight.w600, color: isDark ? Colors.white : Colors.black87)),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
                     children: PeriodStatus.values.map((status) {
+                      final isSelected = _periodStatus == status;
                       return FilterChip(
-                        label: Text(status.toString().split('.').last),
-                        selected: _periodStatus == status,
+                        label: Text(
+                          status.toString().split('.').last,
+                          style: TextStyle(color: isSelected ? Colors.white : (isDark ? Colors.grey[300] : Colors.grey[700])),
+                        ),
+                        selected: isSelected,
                         onSelected: (selected) {
                           setState(() {
                             _periodStatus = selected ? status : PeriodStatus.none;
                           });
                         },
-                        selectedColor: const Color(0xFF7B61FF).withOpacity(0.2),
+                        selectedColor: const Color(0xFF7B61FF),
+                        backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
                       );
                     }).toList(),
                   ),
@@ -151,20 +160,25 @@ class _AddSymptomScreenState extends ConsumerState<AddSymptomScreen> {
                   
                   // Flow Level (only if period is started/ongoing)
                   if (_periodStatus != PeriodStatus.none) ...[
-                    const Text('Flow Level', style: TextStyle(fontWeight: FontWeight.w600)),
+                    Text('Flow Level', style: TextStyle(fontWeight: FontWeight.w600, color: isDark ? Colors.white : Colors.black87)),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
                       children: FlowLevel.values.map((level) {
+                        final isSelected = _flowLevel == level;
                         return ChoiceChip(
-                          label: Text(level.toString().split('.').last),
-                          selected: _flowLevel == level,
+                          label: Text(
+                            level.toString().split('.').last,
+                            style: TextStyle(color: isSelected ? Colors.white : (isDark ? Colors.grey[300] : Colors.grey[700])),
+                          ),
+                          selected: isSelected,
                           onSelected: (selected) {
                             setState(() {
                               _flowLevel = selected ? level : FlowLevel.none;
                             });
                           },
                           selectedColor: const Color(0xFF7B61FF),
+                          backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
                         );
                       }).toList(),
                     ),
@@ -172,7 +186,7 @@ class _AddSymptomScreenState extends ConsumerState<AddSymptomScreen> {
                   ],
                   
                   // Pain Level
-                  const Text('Pain Level (0-10)', style: TextStyle(fontWeight: FontWeight.w600)),
+                  Text('Pain Level (0-10)', style: TextStyle(fontWeight: FontWeight.w600, color: isDark ? Colors.white : Colors.black87)),
                   const SizedBox(height: 8),
                   Row(
                     children: [
@@ -211,28 +225,33 @@ class _AddSymptomScreenState extends ConsumerState<AddSymptomScreen> {
                   const SizedBox(height: 24),
                   
                   // Mood
-                  const Text('Mood', style: TextStyle(fontWeight: FontWeight.w600)),
+                  Text('Mood', style: TextStyle(fontWeight: FontWeight.w600, color: isDark ? Colors.white : Colors.black87)),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
                     children: _moodOptions.map((mood) {
+                      final isSelected = _mood == mood;
                       return FilterChip(
-                        label: Text(mood.toString().split('.').last),
-                        selected: _mood == mood,
+                        label: Text(
+                          mood.toString().split('.').last,
+                          style: TextStyle(color: isSelected ? Colors.white : (isDark ? Colors.grey[300] : Colors.grey[700])),
+                        ),
+                        selected: isSelected,
                         onSelected: (selected) {
                           setState(() {
                             _mood = selected ? mood : Mood.calm;
                           });
                         },
-                        selectedColor: const Color(0xFF7B61FF).withOpacity(0.2),
+                        selectedColor: const Color(0xFF7B61FF),
+                        backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
                       );
                     }).toList(),
                   ),
                   const SizedBox(height: 24),
                   
                   // Symptoms
-                  const Text('Symptoms', style: TextStyle(fontWeight: FontWeight.w600)),
+                  Text('Symptoms', style: TextStyle(fontWeight: FontWeight.w600, color: isDark ? Colors.white : Colors.black87)),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
@@ -240,7 +259,7 @@ class _AddSymptomScreenState extends ConsumerState<AddSymptomScreen> {
                     children: _availableSymptoms.map((symptom) {
                       final isSelected = _selectedSymptoms.contains(symptom);
                       return FilterChip(
-                        label: Text(symptom),
+                        label: Text(symptom, style: TextStyle(color: isDark ? Colors.grey[300] : Colors.grey[700])),
                         selected: isSelected,
                         onSelected: (selected) {
                           setState(() {
@@ -252,6 +271,7 @@ class _AddSymptomScreenState extends ConsumerState<AddSymptomScreen> {
                           });
                         },
                         selectedColor: const Color(0xFF7B61FF).withOpacity(0.2),
+                        backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
                         checkmarkColor: const Color(0xFF7B61FF),
                       );
                     }).toList(),

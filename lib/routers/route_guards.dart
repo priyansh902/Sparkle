@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sparkle_lite/Data/repositiories/auth_repository.dart';
-import 'package:sparkle_lite/core/services/mock_auth_service.dart';
+import 'package:sparkle_lite/core/services/firebase_auth_service.dart';
 import 'package:sparkle_lite/core/constants/app_constants.dart';
 
 /// RouteGuards class contains static methods for guarding routes based on authentication status and onboarding completion. The guardRedirect method checks if the user is logged in and whether they have completed onboarding, redirecting them to the appropriate screen based on their status. This ensures that unauthenticated users are directed to the login screen, while authenticated users are directed to the dashboard or onboarding screens as needed. The guards help maintain a secure and user-friendly navigation flow throughout the app.
@@ -9,7 +9,7 @@ import 'package:sparkle_lite/core/constants/app_constants.dart';
 /// The RouteGuards class can be easily extended in the future to include additional guards for other routes or features, such as role-based access control or feature flag checks. By centralizing the route guarding logic in a single class, it becomes easier to manage and update the navigation flow of the app as new features are added or authentication requirements change. The use of async logic in the guardRedirect method allows for flexibility in how authentication and onboarding status are determined, whether through local storage, network requests, or other means. Overall, the RouteGuards class is a key component of the app's navigation architecture, ensuring that users are directed to the appropriate screens based on their authentication and onboarding status.
 class RouteGuards {
   static Future<String?> guardRedirect(BuildContext context, GoRouterState state) async {
-    final authRepo = AuthRepository(authService: MockAuthService());
+    final authRepo = AuthRepository(authService: FirebaseAuthService());
     final isLoggedIn = await authRepo.isLoggedIn();
     
     // Welcome/Login routes - if logged in, go to dashboard

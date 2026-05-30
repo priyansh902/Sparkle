@@ -10,6 +10,7 @@ import 'package:sparkle_lite/shared/widgets/primary_button.dart';
 /// SIGNUP SCREEN
 /// This screen allows users to create a new account by entering their name, email, and password. It includes form validation to ensure that all fields are filled out correctly, and it interacts with the AuthProvider to handle the signup process. If the signup is successful, the user is navigated to the onboarding screen to complete their profile setup.
 /// The UI is designed to be clean and user-friendly, with clear input fields, error messages, and a prominent signup button. It also includes a back button to return to the welcome screen and a link for users who already have an account to navigate to the login screen.
+
 class SignupScreen extends ConsumerStatefulWidget {
   const SignupScreen({super.key});
 
@@ -52,6 +53,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Scaffold(
       body: SafeArea(
@@ -66,7 +68,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   // Back button
                   IconButton(
                     onPressed: () => context.go(AppConstants.routeWelcome),
-                    icon: const Icon(Icons.arrow_back),
+                    icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
                     padding: EdgeInsets.zero,
                     alignment: Alignment.centerLeft,
                   ),
@@ -76,13 +78,14 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     'Create Account',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : Colors.black87,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Join Sparkle Lite to track your health journey',
                     style: TextStyle(
-                      color: Colors.grey[600],
+                      color: isDark ? Colors.grey[400] : Colors.grey[600],
                       fontSize: 14,
                     ),
                   ),
@@ -90,13 +93,17 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   // Name field
                   TextFormField(
                     controller: _nameController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Full Name',
-                      prefixIcon: Icon(Icons.person_outline),
-                      border: OutlineInputBorder(
+                      prefixIcon: const Icon(Icons.person_outline),
+                      border: const OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(12)),
                       ),
+                      filled: true,
+                      fillColor: isDark ? Colors.grey[800] : Colors.grey[50],
+                      labelStyle: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
                     ),
+                    style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Name is required';
@@ -108,14 +115,18 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   // Email field
                   TextFormField(
                     controller: _emailController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Email',
-                      prefixIcon: Icon(Icons.email_outlined),
-                      border: OutlineInputBorder(
+                      prefixIcon: const Icon(Icons.email_outlined),
+                      border: const OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(12)),
                       ),
+                      filled: true,
+                      fillColor: isDark ? Colors.grey[800] : Colors.grey[50],
+                      labelStyle: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
                     ),
                     keyboardType: TextInputType.emailAddress,
+                    style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Email is required';
@@ -137,6 +148,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                          color: isDark ? Colors.grey[400] : Colors.grey[600],
                         ),
                         onPressed: () {
                           setState(() {
@@ -147,8 +159,12 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       border: const OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(12)),
                       ),
+                      filled: true,
+                      fillColor: isDark ? Colors.grey[800] : Colors.grey[50],
+                      labelStyle: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
                     ),
                     obscureText: _obscurePassword,
+                    style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Password is required';
@@ -169,6 +185,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                          color: isDark ? Colors.grey[400] : Colors.grey[600],
                         ),
                         onPressed: () {
                           setState(() {
@@ -179,8 +196,12 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       border: const OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(12)),
                       ),
+                      filled: true,
+                      fillColor: isDark ? Colors.grey[800] : Colors.grey[50],
+                      labelStyle: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
                     ),
                     obscureText: _obscureConfirmPassword,
+                    style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please confirm your password';
@@ -197,17 +218,17 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.red[50],
+                        color: isDark ? Colors.red[900]?.withOpacity(0.3) : Colors.red[50],
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.error_outline, color: Colors.red[400], size: 20),
+                          Icon(Icons.error_outline, color: isDark ? Colors.red[300] : Colors.red[400], size: 20),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               authState.error!,
-                              style: TextStyle(color: Colors.red[700], fontSize: 13),
+                              style: TextStyle(color: isDark ? Colors.red[300] : Colors.red[700], fontSize: 13),
                             ),
                           ),
                         ],
@@ -229,7 +250,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     children: [
                       Text(
                         "Already have an account? ",
-                        style: TextStyle(color: Colors.grey[600]),
+                        style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
                       ),
                       TextButton(
                         onPressed: () {

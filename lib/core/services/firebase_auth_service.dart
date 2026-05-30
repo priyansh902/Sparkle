@@ -50,12 +50,21 @@ class FirebaseAuthService implements AuthInterface {
             createdAt: (data['createdAt'] as Timestamp).toDate(),
           );
         } else {
-          appUser = UserModel(
-            id: user.uid,
-            email: user.email ?? email,
-            name: user.displayName ?? '',
-            createdAt: DateTime.now(),
-          );
+            await _auth.signOut();
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.remove(AppConstants.keyUserId);
+            await prefs.setBool(AppConstants.keyIsLoggedIn, false);
+
+            return AuthResult(
+              success: false,
+              error: 'Account data is missing. Please contact support.',
+            );
+          // appUser = UserModel(
+          //   id: user.uid,
+          //   email: user.email ?? email,
+          //   name: user.displayName ?? '',
+          //   createdAt: DateTime.now(),
+          // );
         }
         
         // Save session
@@ -105,6 +114,7 @@ class FirebaseAuthService implements AuthInterface {
           'name': name,
           'email': email,
           'createdAt': Timestamp.now(),
+          'onboardingCompleted': false,
           'conditions': [],
           'medications': [],
         });
@@ -138,20 +148,44 @@ class FirebaseAuthService implements AuthInterface {
 
   @override
   Future<bool> isLoggedIn() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(AppConstants.keyIsLoggedIn) ?? false;
+    // final prefs = await SharedPreferences.getInstance();
+    // return prefs.getBool(AppConstants.keyIsLoggedIn) ?? false;
+    return _auth.currentUser != null;
   }
 
   @override
   Future<bool> hasCompletedOnboarding() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(AppConstants.keyOnboardingCompleted) ?? false;
+    // final prefs = await SharedPreferences.getInstance();
+    // return prefs.getBool(AppConstants.keyOnboardingCompleted) ?? false;
+    final user = _auth.currentUser;
+    if (user == null) return false;
+    
+    try {
+      final userDoc = await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      
+      if (userDoc.exists) {
+        final data = userDoc.data() as Map<String, dynamic>;
+        return data['onboardingCompleted'] ?? false;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
   }
 
   @override
   Future<void> setOnboardingCompleted(bool completed) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(AppConstants.keyOnboardingCompleted, completed);
+    // final prefs = await SharedPreferences.getInstance();
+    // await prefs.setBool(AppConstants.keyOnboardingCompleted, completed);
+      final user = _auth.currentUser;
+      if (user == null) return;
+      
+      await _firestore.collection('users').doc(user.uid).set({
+        'onboardingCompleted': completed,
+    }, SetOptions(merge: true));
   }
 
   @override
@@ -169,33 +203,63 @@ class FirebaseAuthService implements AuthInterface {
         .collection('users')
         .doc(firebaseUser.uid)
         .get();
+
+        if (!userDoc.exists) {
+          await _auth.signOut();
+
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.remove(AppConstants.keyUserId);
+          await prefs.setBool(AppConstants.keyIsLoggedIn, false);
+
+          return null;
+        }
+
+        final data = userDoc.data() as Map<String, dynamic>;
+
+        return UserModel(
+          id: firebaseUser.uid,
+          email: firebaseUser.email ?? '',
+          name: data['name'] ?? firebaseUser.displayName ?? '',
+          nickname: data['nickname'],
+          ageRange: data['ageRange'],
+          lifeStage: data['lifeStage'] != null
+              ? _parseLifeStage(data['lifeStage'])
+              : null,
+          cycleStatus: data['cycleStatus'] != null
+              ? _parseCycleStatus(data['cycleStatus'])
+              : null,
+          conditions: List<String>.from(data['conditions'] ?? []),
+          medications: List<String>.from(data['medications'] ?? []),
+          createdAt: (data['createdAt'] as Timestamp).toDate(),
+        );
     
-    if (userDoc.exists) {
-      final data = userDoc.data() as Map<String, dynamic>;
-      return UserModel(
-        id: firebaseUser.uid,
-        email: firebaseUser.email ?? '',
-        name: data['name'] ?? firebaseUser.displayName ?? '',
-        nickname: data['nickname'],
-        ageRange: data['ageRange'],
-        lifeStage: data['lifeStage'] != null 
-            ? _parseLifeStage(data['lifeStage']) 
-            : null,
-        cycleStatus: data['cycleStatus'] != null 
-            ? _parseCycleStatus(data['cycleStatus']) 
-            : null,
-        conditions: List<String>.from(data['conditions'] ?? []),
-        medications: List<String>.from(data['medications'] ?? []),
-        createdAt: (data['createdAt'] as Timestamp).toDate(),
-      );
-    }
+    // if (userDoc.exists) {
+    //   final data = userDoc.data() as Map<String, dynamic>;
+    //   return UserModel(
+    //     id: firebaseUser.uid,
+    //     email: firebaseUser.email ?? '',
+    //     name: data['name'] ?? firebaseUser.displayName ?? '',
+    //     nickname: data['nickname'],
+    //     ageRange: data['ageRange'],
+    //     lifeStage: data['lifeStage'] != null 
+    //         ? _parseLifeStage(data['lifeStage']) 
+    //         : null,
+    //     cycleStatus: data['cycleStatus'] != null 
+    //         ? _parseCycleStatus(data['cycleStatus']) 
+    //         : null,
+    //     conditions: List<String>.from(data['conditions'] ?? []),
+    //     medications: List<String>.from(data['medications'] ?? []),
+    //     createdAt: (data['createdAt'] as Timestamp).toDate(),
+    //   );
+    // }
+
     
-    return UserModel(
-      id: firebaseUser.uid,
-      email: firebaseUser.email ?? '',
-      name: firebaseUser.displayName ?? '',
-      createdAt: DateTime.now(),
-    );
+    // // return UserModel(
+    // //   id: firebaseUser.uid,
+    // //   email: firebaseUser.email ?? '',
+    // //   name: firebaseUser.displayName ?? '',
+    // //   createdAt: DateTime.now(),
+    // // );
   }
 
   @override

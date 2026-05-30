@@ -10,6 +10,7 @@ import 'package:sparkle_lite/shared/widgets/primary_button.dart';
 /// Onboarding screen shown after login if user hasn't completed onboarding yet
 /// This screen provides a multi-page introduction to the app's features and benefits. It uses a PageView to allow users to swipe through different onboarding pages, each highlighting a key aspect of the app. The final page includes a "Get Started" button that, when pressed, marks onboarding as complete in the AuthProvider and navigates the user to the health profile setup screen.
 ///   The onboarding process is designed to be engaging and informative, helping users understand the value of the app and encouraging them to complete their profile for a personalized experience. The UI includes icons, titles, and descriptions for each onboarding page, as well as visual indicators of the current page in the form of dots at the bottom of the screen.
+
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
@@ -49,7 +50,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   Future<void> _completeOnboarding() async {
-    
     await ref.read(authProvider.notifier).completeOnboarding();
     if (mounted) {
       context.go(AppConstants.routeHealthProfile);
@@ -58,6 +58,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -73,11 +75,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 },
                 itemBuilder: (context, index) {
                   final page = _pages[index];
-                  return _buildPage(page);
+                  return _buildPage(page, isDark);
                 },
               ),
             ),
-            _buildBottomNavigation(),
+            _buildBottomNavigation(isDark),
             const SizedBox(height: 24),
           ],
         ),
@@ -85,7 +87,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
-  Widget _buildPage(OnboardingData page) {
+  Widget _buildPage(OnboardingData page, bool isDark) {
     return Padding(
       padding: const EdgeInsets.all(32.0),
       child: Column(
@@ -109,7 +111,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             page.title,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
-              color: const Color(0xFF2D2D2D),
+              color: isDark ? Colors.white : const Color(0xFF2D2D2D),
             ),
             textAlign: TextAlign.center,
           ),
@@ -117,7 +119,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           Text(
             page.description,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Colors.grey[600],
+              color: isDark ? Colors.grey[400] : Colors.grey[600],
             ),
             textAlign: TextAlign.center,
           ),
@@ -126,7 +128,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
-  Widget _buildBottomNavigation() {
+  Widget _buildBottomNavigation(bool isDark) {
     return Column(
       children: [
         Row(
@@ -140,7 +142,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               decoration: BoxDecoration(
                 color: _currentPage == index
                     ? const Color(0xFF7B61FF)
-                    : Colors.grey[300],
+                    : (isDark ? Colors.grey[700] : Colors.grey[300]),
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -167,4 +169,3 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 }
-

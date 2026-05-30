@@ -12,6 +12,7 @@ import 'package:sparkle_lite/shared/widgets/form_text_field.dart';
 /// TODO: Implement actual file upload and storage
 /// TODO: Add error handling and validation for file types and sizes
 /// TODO: Integrate with backend to save record details and file URL
+
 class UploadRecordScreen extends ConsumerStatefulWidget {
   const UploadRecordScreen({super.key});
 
@@ -96,6 +97,7 @@ class _UploadRecordScreenState extends ConsumerState<UploadRecordScreen> {
   @override
   Widget build(BuildContext context) {
     final recordState = ref.watch(recordProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Scaffold(
       appBar: AppBar(
@@ -128,7 +130,13 @@ class _UploadRecordScreenState extends ConsumerState<UploadRecordScreen> {
                   const SizedBox(height: 16),
                   
                   // Record Type
-                  const Text('Record Type', style: TextStyle(fontWeight: FontWeight.w600)),
+                  Text(
+                    'Record Type',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   DropdownButtonFormField<RecordType>(
                     value: _selectedType,
@@ -137,8 +145,10 @@ class _UploadRecordScreenState extends ConsumerState<UploadRecordScreen> {
                         borderRadius: BorderRadius.all(Radius.circular(12)),
                       ),
                       filled: true,
-                      fillColor: Colors.grey[50],
+                      fillColor: isDark ? Colors.grey[800] : Colors.grey[50],
                     ),
+                    dropdownColor: isDark ? Colors.grey[800] : Colors.white,
+                    style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                     items: RecordType.values.map((type) {
                       return DropdownMenuItem(
                         value: type,
@@ -146,7 +156,7 @@ class _UploadRecordScreenState extends ConsumerState<UploadRecordScreen> {
                           children: [
                             Icon(type.icon, size: 20, color: const Color(0xFF7B61FF)),
                             const SizedBox(width: 8),
-                            Text(type.displayName),
+                            Text(type.displayName, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                           ],
                         ),
                       );
@@ -163,8 +173,11 @@ class _UploadRecordScreenState extends ConsumerState<UploadRecordScreen> {
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: const Icon(Icons.calendar_today, color: Color(0xFF7B61FF)),
-                    title: const Text('Record Date'),
-                    subtitle: Text(_selectedDate.toString().split(' ')[0]),
+                    title: Text('Record Date', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+                    subtitle: Text(
+                      _selectedDate.toString().split(' ')[0],
+                      style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
+                    ),
                     onTap: () async {
                       final picked = await showDatePicker(
                         context: context,
@@ -189,7 +202,13 @@ class _UploadRecordScreenState extends ConsumerState<UploadRecordScreen> {
                   const SizedBox(height: 16),
                   
                   // File Upload
-                  const Text('Attach File', style: TextStyle(fontWeight: FontWeight.w600)),
+                  Text(
+                    'Attach File',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   InkWell(
                     onTap: _pickFile,
@@ -197,9 +216,9 @@ class _UploadRecordScreenState extends ConsumerState<UploadRecordScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey[300]!),
+                        border: Border.all(color: isDark ? Colors.grey[700]! : Colors.grey[300]!),
                         borderRadius: BorderRadius.circular(12),
-                        color: Colors.grey[50],
+                        color: isDark ? Colors.grey[800] : Colors.grey[50],
                       ),
                       child: Column(
                         children: [
@@ -212,13 +231,13 @@ class _UploadRecordScreenState extends ConsumerState<UploadRecordScreen> {
                           Text(
                             _selectedFileName ?? 'Tap to select file',
                             style: TextStyle(
-                              color: _selectedFileName == null ? Colors.grey[600] : const Color(0xFF7B61FF),
+                              color: _selectedFileName == null ? (isDark ? Colors.grey[500] : Colors.grey[600]) : const Color(0xFF7B61FF),
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             'Supports: PDF, JPG, PNG, TXT',
-                            style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                            style: TextStyle(fontSize: 12, color: isDark ? Colors.grey[500] : Colors.grey[500]),
                           ),
                         ],
                       ),

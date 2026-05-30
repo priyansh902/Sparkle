@@ -26,7 +26,6 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
   bool _isLoading = true;
   bool _isEditing = false;
   
-  // Edit form controllers
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _titleController;
   late TextEditingController _doctorNameController;
@@ -71,7 +70,7 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
     setState(() {
       _isEditing = !_isEditing;
       if (!_isEditing) {
-        _initializeControllers(); // Reset to original values
+        _initializeControllers();
       }
     });
   }
@@ -133,6 +132,8 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
   }
 
   void _viewFile() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -143,6 +144,7 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
             Text('File Preview'),
           ],
         ),
+        backgroundColor: isDark ? Colors.grey[850] : Colors.white,
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -150,13 +152,16 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
             const SizedBox(height: 16),
             Text(
               _record!.fileUrl?.split('/').last ?? 'document.pdf',
-              style: const TextStyle(fontWeight: FontWeight.w500),
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
               'This is a mock file viewer.\nIn production, this would show the actual file content.',
-              style: TextStyle(color: Colors.grey[600], fontSize: 12),
+              style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600], fontSize: 12),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -194,6 +199,8 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     if (_isLoading) {
       return const Scaffold(
         body: LoadingWidget(message: 'Loading record details...'),
@@ -210,12 +217,12 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_isEditing ? 'Edit Record' : 'Record Details'),
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
           if (!_isEditing) ...[
             IconButton(
-              icon: const Icon(Icons.edit),
+              icon: Icon(Icons.edit, color: isDark ? Colors.white : Colors.black87),
               onPressed: _toggleEditMode,
             ),
             IconButton(
@@ -224,17 +231,17 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
             ),
           ] else ...[
             IconButton(
-              icon: const Icon(Icons.close),
+              icon: Icon(Icons.close, color: isDark ? Colors.white : Colors.black87),
               onPressed: _toggleEditMode,
             ),
           ],
         ],
       ),
-      body: _isEditing ? _buildEditForm() : _buildViewMode(),
+      body: _isEditing ? _buildEditForm(isDark) : _buildViewMode(isDark),
     );
   }
   
-  Widget _buildViewMode() {
+  Widget _buildViewMode(bool isDark) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -252,7 +259,7 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
               child: Icon(
                 _record!.recordType.icon,
                 size: 50,
-                color: const Color.fromARGB(255, 97, 237, 255),
+                color: const Color(0xFF7B61FF),
               ),
             ),
           ),
@@ -262,9 +269,10 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
           Center(
             child: Text(
               _record!.title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white : Colors.black87,
               ),
               textAlign: TextAlign.center,
             ),
@@ -293,6 +301,7 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
           // Details card
           Card(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            color: isDark ? Colors.grey[850] : Colors.white,
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -301,12 +310,14 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
                     Icons.calendar_today,
                     'Date',
                     _formatDate(_record!.recordDate),
+                    isDark,
                   ),
                   const Divider(),
                   _buildDetailRow(
                     Icons.label,
                     'Type',
                     _record!.recordType.displayName,
+                    isDark,
                   ),
                   if (_record!.doctorName != null) ...[
                     const Divider(),
@@ -314,6 +325,7 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
                       Icons.person,
                       'Doctor',
                       _record!.doctorName!,
+                      isDark,
                     ),
                   ],
                   if (_record!.hasFile) ...[
@@ -322,6 +334,7 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
                       Icons.attach_file,
                       'Attachment',
                       _record!.fileUrl!.split('/').last,
+                      isDark,
                       isAction: true,
                       onTap: _viewFile,
                     ),
@@ -333,21 +346,23 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
           
           if (_record!.notes != null) ...[
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'Notes',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white : Colors.black87,
               ),
             ),
             const SizedBox(height: 12),
             Card(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              color: isDark ? Colors.grey[850] : Colors.white,
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
                   _record!.notes!,
-                  style: TextStyle(color: Colors.grey[700], height: 1.5),
+                  style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[700], height: 1.5),
                 ),
               ),
             ),
@@ -359,7 +374,7 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
           Center(
             child: Text(
               'Created on ${_formatDateTime(_record!.createdAt)}',
-              style: TextStyle(color: Colors.grey[500], fontSize: 12),
+              style: TextStyle(color: isDark ? Colors.grey[500] : Colors.grey[500], fontSize: 12),
             ),
           ),
           const SizedBox(height: 16),
@@ -368,7 +383,7 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
     );
   }
   
-  Widget _buildEditForm() {
+  Widget _buildEditForm(bool isDark) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Form(
@@ -391,7 +406,13 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
             const SizedBox(height: 16),
             
             // Record Type
-            const Text('Record Type', style: TextStyle(fontWeight: FontWeight.w600)),
+            Text(
+              'Record Type',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
+            ),
             const SizedBox(height: 8),
             DropdownButtonFormField<RecordType>(
               value: _selectedType,
@@ -400,8 +421,10 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
                   borderRadius: BorderRadius.all(Radius.circular(12)),
                 ),
                 filled: true,
-                fillColor: Colors.grey[50],
+                fillColor: isDark ? Colors.grey[800] : Colors.grey[50],
               ),
+              dropdownColor: isDark ? Colors.grey[800] : Colors.white,
+              style: TextStyle(color: isDark ? Colors.white : Colors.black87),
               items: RecordType.values.map((type) {
                 return DropdownMenuItem(
                   value: type,
@@ -409,7 +432,7 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
                     children: [
                       Icon(type.icon, size: 20, color: const Color(0xFF7B61FF)),
                       const SizedBox(width: 8),
-                      Text(type.displayName),
+                      Text(type.displayName, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                     ],
                   ),
                 );
@@ -426,8 +449,11 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.calendar_today, color: Color(0xFF7B61FF)),
-              title: const Text('Record Date'),
-              subtitle: Text(_selectedDate.toString().split(' ')[0]),
+              title: Text('Record Date', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+              subtitle: Text(
+                _selectedDate.toString().split(' ')[0],
+                style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
+              ),
               onTap: () async {
                 final picked = await showDatePicker(
                   context: context,
@@ -469,8 +495,9 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
+                      side: BorderSide(color: isDark ? Colors.grey[600]! : Colors.grey[400]!),
                     ),
-                    child: const Text('Cancel'),
+                    child: Text('Cancel', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -488,7 +515,7 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
     );
   }
   
-  Widget _buildDetailRow(IconData icon, String label, String value, {
+  Widget _buildDetailRow(IconData icon, String label, String value, bool isDark, {
     bool isAction = false,
     VoidCallback? onTap,
   }) {
@@ -504,21 +531,26 @@ class _RecordDetailScreenState extends ConsumerState<RecordDetailScreen> {
               width: 100,
               child: Text(
                 label,
-                style: const TextStyle(fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
               ),
             ),
             Expanded(
               child: Text(
                 value,
                 style: TextStyle(
-                  color: isAction ? const Color(0xFF7B61FF) : Colors.grey[700],
+                  color: isAction 
+                      ? const Color(0xFF7B61FF) 
+                      : (isDark ? Colors.grey[400] : Colors.grey[700]),
                   fontWeight: isAction ? FontWeight.w600 : null,
                 ),
                 textAlign: TextAlign.right,
               ),
             ),
             if (isAction)
-              const Icon(Icons.chevron_right, size: 20, color: Colors.grey),
+              Icon(Icons.chevron_right, size: 20, color: isDark ? Colors.grey[600] : Colors.grey[400]),
           ],
         ),
       ),

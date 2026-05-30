@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sparkle_lite/providers/settings_provider.dart';
 import 'package:sparkle_lite/shared/widgets/primary_button.dart';
 
-/// This screen allows users to customize their notification preferences, including enabling/disabling reminders, choosing specific reminder types, and setting privacy options for notifications. It interacts with the SettingsProvider to load and save these preferences, which are persisted in a mock database service for demonstration purposes. The UI includes toggles for different notification types and a preview of how notifications will appear based on the user's settings. The screen is designed to be user-friendly and informative, helping users understand the implications of their notification choices on their privacy and app experience.
-/// TODO: Integrate with actual notification scheduling and handling logic to reflect changes in real-time.
+/// A screen for managing notification settings, including reminder types and privacy options.
+/// This screen allows users to customize how they receive health reminders and notifications, with a focus on privacy and user control.  
 
 class NotificationSettingsScreen extends ConsumerStatefulWidget {
   const NotificationSettingsScreen({super.key});
@@ -31,7 +31,6 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
   Future<void> _loadSettings() async {
     final settings = await ref.read(settingsProvider.notifier).loadSettings();
     setState(() {
-      // For demo purposes, we'll initialize with defaults
       _enableReminders = true;
       _periodReminders = true;
       _medicationReminders = false;
@@ -43,10 +42,6 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
   }
 
   Future<void> _saveSettings() async {
-    // Save notification preferences
-    // In a real app, you'd save these to SharedPreferences or Firebase
-    
-    // Update privacy setting for generic notifications
     final currentSettings = ref.read(settingsProvider);
     await ref.read(settingsProvider.notifier).saveSettings(
       hideDashboardDetails: currentSettings.hideDashboardDetails,
@@ -65,6 +60,8 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     if (_isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
@@ -73,7 +70,7 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notification Settings'),
+        title: Text('Notification Settings', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -86,7 +83,7 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF7B61FF).withOpacity(0.1),
+                color: const Color(0xFF7B61FF).withOpacity(isDark ? 0.15 : 0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
@@ -107,7 +104,7 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
                         const SizedBox(height: 4),
                         Text(
                           'Choose how and when you receive health reminders and updates.',
-                          style: TextStyle(color: Colors.grey[700], fontSize: 13),
+                          style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[700], fontSize: 13),
                         ),
                       ],
                     ),
@@ -121,10 +118,11 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
             // Main notification toggle
             _buildSettingsSection(
               title: 'Notifications',
+              isDark: isDark,
               children: [
                 SwitchListTile(
-                  title: const Text('Enable Reminders'),
-                  subtitle: const Text('Receive health reminders and notifications'),
+                  title: Text('Enable Reminders', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+                  subtitle: Text('Receive health reminders and notifications', style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600])),
                   value: _enableReminders,
                   onChanged: (value) {
                     setState(() => _enableReminders = value);
@@ -141,10 +139,11 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
             if (_enableReminders) ...[
               _buildSettingsSection(
                 title: 'Reminder Types',
+                isDark: isDark,
                 children: [
                   SwitchListTile(
-                    title: const Text('Period Tracking Reminders'),
-                    subtitle: const Text('Get reminders to log your period and symptoms'),
+                    title: Text('Period Tracking Reminders', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+                    subtitle: Text('Get reminders to log your period and symptoms', style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600])),
                     value: _periodReminders,
                     onChanged: (value) {
                       setState(() => _periodReminders = value);
@@ -153,8 +152,8 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
                     contentPadding: EdgeInsets.zero,
                   ),
                   SwitchListTile(
-                    title: const Text('Medication Reminders'),
-                    subtitle: const Text('Reminders to take your medications'),
+                    title: Text('Medication Reminders', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+                    subtitle: Text('Reminders to take your medications', style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600])),
                     value: _medicationReminders,
                     onChanged: (value) {
                       setState(() => _medicationReminders = value);
@@ -163,8 +162,8 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
                     contentPadding: EdgeInsets.zero,
                   ),
                   SwitchListTile(
-                    title: const Text('Appointment Reminders'),
-                    subtitle: const Text('Reminders for upcoming doctor visits'),
+                    title: Text('Appointment Reminders', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+                    subtitle: Text('Reminders for upcoming doctor visits', style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600])),
                     value: _appointmentReminders,
                     onChanged: (value) {
                       setState(() => _appointmentReminders = value);
@@ -173,8 +172,8 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
                     contentPadding: EdgeInsets.zero,
                   ),
                   SwitchListTile(
-                    title: const Text('AI Insight Alerts'),
-                    subtitle: const Text('Get notified when new health insights are available'),
+                    title: Text('AI Insight Alerts', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+                    subtitle: Text('Get notified when new health insights are available', style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600])),
                     value: _insightAlerts,
                     onChanged: (value) {
                       setState(() => _insightAlerts = value);
@@ -190,11 +189,13 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
               // Privacy notice for notifications
               _buildSettingsSection(
                 title: 'Notification Privacy',
+                isDark: isDark,
                 children: [
                   SwitchListTile(
-                    title: const Text('Use generic notification text'),
-                    subtitle: const Text(
+                    title: Text('Use generic notification text', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+                    subtitle: Text(
                       'Example: "You have a health reminder" instead of specific medication reminders',
+                      style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
                     ),
                     value: _useGenericText,
                     onChanged: (value) {
@@ -203,11 +204,11 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
                     activeColor: const Color(0xFF7B61FF),
                     contentPadding: EdgeInsets.zero,
                   ),
-                  const Padding(
-                    padding: EdgeInsets.all(16),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
                     child: Text(
                       'Generic notifications help protect your privacy by hiding sensitive health information from your lock screen.',
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                      style: TextStyle(fontSize: 12, color: isDark ? Colors.grey[500] : Colors.grey),
                     ),
                   ),
                 ],
@@ -219,7 +220,7 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
             // Example notification preview
             Container(
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: isDark ? Colors.grey[850] : Colors.grey[100],
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Padding(
@@ -227,18 +228,19 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Preview',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
+                        color: isDark ? Colors.white : Colors.black87,
                       ),
                     ),
                     const SizedBox(height: 12),
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: isDark ? Colors.grey[800] : Colors.white,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
@@ -267,18 +269,19 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'Sparkle Lite',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 14,
+                                    color: isDark ? Colors.white : Colors.black87,
                                   ),
                                 ),
                                 Text(
                                   _useGenericText
                                       ? 'You have a health reminder'
                                       : 'Time to log your symptoms for today',
-                                  style: const TextStyle(fontSize: 12),
+                                  style: TextStyle(fontSize: 12, color: isDark ? Colors.grey[400] : Colors.grey[600]),
                                 ),
                               ],
                             ),
@@ -315,13 +318,14 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
   
   Widget _buildSettingsSection({
     required String title,
+    required bool isDark,
     required List<Widget> children,
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? Colors.grey[850] : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: isDark ? Colors.grey[800]! : Colors.grey[200]!),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -330,9 +334,10 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
             padding: const EdgeInsets.all(16),
             child: Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
+                color: isDark ? Colors.white : Colors.black87,
               ),
             ),
           ),

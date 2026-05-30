@@ -3,15 +3,15 @@ import 'package:go_router/go_router.dart';
 import 'package:sparkle_lite/core/constants/app_constants.dart';
 import 'package:sparkle_lite/shared/widgets/primary_button.dart';
 
-
 /// Welcome screen shown to unauthenticated users
-/// This screen serves as the entry point for new users, providing a warm welcome and guiding them towards signing up or logging in. It features a clean and engaging design with a prominent logo, a welcoming title and subtitle, and clear calls to action for both new and existing users. The "Get Started" button directs new users to the signup screen, while the "Already have an account? Sign In" link takes existing users to the login screen. The screen also includes a privacy note at the bottom to reassure users about data security. Overall, the WelcomeScreen is designed to create a positive first impression and encourage users to take the next step in their health journey with Sparkle Lite.
-/// The WelcomeScreen is also designed to be responsive and visually appealing across different device sizes, ensuring a consistent user experience. The use of colors, typography, and spacing is carefully chosen to align with the overall branding of the app and create an inviting atmosphere for users as they begin their journey with Sparkle Lite.
+/// This screen serves as the entry point for new users, providing a warm welcome and guiding them towards signing up or logging in.
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -39,7 +39,7 @@ class WelcomeScreen extends StatelessWidget {
                 'Welcome to Sparkle Lite',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF2D2D2D),
+                  color: isDark ? Colors.white : const Color(0xFF2D2D2D),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -48,7 +48,7 @@ class WelcomeScreen extends StatelessWidget {
               Text(
                 'Your private companion for women\'s health and family wellness',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.grey[600],
+                  color: isDark ? Colors.grey[400] : Colors.grey[600],
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -79,7 +79,7 @@ class WelcomeScreen extends StatelessWidget {
                 'Your health data is private and secure',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey[500],
+                  color: isDark ? Colors.grey[500] : Colors.grey[500],
                 ),
               ),
               const SizedBox(height: 16),

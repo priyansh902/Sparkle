@@ -17,6 +17,7 @@ class FamilyListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final familyState = ref.watch(familyProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Scaffold(
       appBar: AppBar(
@@ -25,18 +26,18 @@ class FamilyListScreen extends ConsumerWidget {
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
+            icon: Icon(Icons.add, color: isDark ? Colors.white : Colors.black87),
             onPressed: () {
               context.push(AppConstants.routeAddFamilyMember);
             },
           ),
         ],
       ),
-      body: _buildBody(context, ref, familyState),
+      body: _buildBody(context, ref, familyState, isDark),
     );
   }
   
-  Widget _buildBody(BuildContext context, WidgetRef ref, FamilyState state) {
+  Widget _buildBody(BuildContext context, WidgetRef ref, FamilyState state, bool isDark) {
     if (state.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -58,15 +59,16 @@ class FamilyListScreen extends ConsumerWidget {
       itemCount: state.members.length,
       itemBuilder: (context, index) {
         final member = state.members[index];
-        return _buildFamilyCard(context, ref, member);
+        return _buildFamilyCard(context, ref, member, isDark);
       },
     );
   }
   
-  Widget _buildFamilyCard(BuildContext context, WidgetRef ref, FamilyMember member) {
+  Widget _buildFamilyCard(BuildContext context, WidgetRef ref, FamilyMember member, bool isDark) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: isDark ? Colors.grey[850] : Colors.white,
       child: Dismissible(
         key: Key(member.id),
         background: Container(
@@ -106,7 +108,7 @@ class FamilyListScreen extends ConsumerWidget {
         },
         child: ListTile(
           leading: CircleAvatar(
-            backgroundColor: const Color(0xFF7B61FF).withOpacity(0.1),
+            backgroundColor: const Color(0xFF7B61FF).withOpacity(isDark ? 0.2 : 0.1),
             child: Text(
               member.name.isNotEmpty ? member.name[0].toUpperCase() : '?',
               style: const TextStyle(color: Color(0xFF7B61FF), fontWeight: FontWeight.bold),
@@ -114,22 +116,27 @@ class FamilyListScreen extends ConsumerWidget {
           ),
           title: Text(
             member.displayName,
-            style: const TextStyle(fontWeight: FontWeight.w600),
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: isDark ? Colors.white : Colors.black87,
+            ),
           ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(member.relationship.displayName),  // ✅ Now works with extension
+              Text(
+                member.relationship.displayName,
+                style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
+              ),
               if (member.ageRange.isNotEmpty)
                 Text(
                   'Age: ${member.ageRange}',
-                  style: const TextStyle(fontSize: 12),
+                  style: TextStyle(fontSize: 12, color: isDark ? Colors.grey[500] : Colors.grey[500]),
                 ),
             ],
           ),
-          trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+          trailing: Icon(Icons.chevron_right, color: isDark ? Colors.grey[600] : Colors.grey[400]),
           onTap: () {
-            // TODO: View member details
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Member details coming soon')),
             );

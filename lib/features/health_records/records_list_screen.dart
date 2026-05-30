@@ -30,11 +30,9 @@ class _RecordsListScreenState extends ConsumerState<RecordsListScreen> {
     final records = ref.watch(recordProvider).records;
     
     return records.where((record) {
-      // Filter by type
       if (_selectedFilter != null && record.recordType != _selectedFilter) {
         return false;
       }
-      // Filter by search
       if (_searchQuery.isNotEmpty) {
         return record.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
                (record.doctorName?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false);
@@ -46,6 +44,7 @@ class _RecordsListScreenState extends ConsumerState<RecordsListScreen> {
   @override
   Widget build(BuildContext context) {
     final recordState = ref.watch(recordProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Scaffold(
       appBar: AppBar(
@@ -54,7 +53,7 @@ class _RecordsListScreenState extends ConsumerState<RecordsListScreen> {
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
+            icon: Icon(Icons.add, color: isDark ? Colors.white : Colors.black87),
             onPressed: () {
               context.push(AppConstants.routeUploadRecord);
             },
@@ -67,15 +66,17 @@ class _RecordsListScreenState extends ConsumerState<RecordsListScreen> {
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Search records...',
-                prefixIcon: const Icon(Icons.search),
+                hintStyle: TextStyle(color: isDark ? Colors.grey[500] : Colors.grey[400]),
+                prefixIcon: Icon(Icons.search, color: isDark ? Colors.grey[500] : Colors.grey[400]),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
                 ),
                 filled: true,
-                fillColor: Colors.grey[100],
+                fillColor: isDark ? Colors.grey[800] : Colors.grey[100],
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
+              style: TextStyle(color: isDark ? Colors.white : Colors.black87),
               onChanged: (value) {
                 setState(() {
                   _searchQuery = value;
@@ -85,11 +86,11 @@ class _RecordsListScreenState extends ConsumerState<RecordsListScreen> {
           ),
         ),
       ),
-      body: _buildBody(context, ref, recordState),
+      body: _buildBody(context, ref, recordState, isDark),
     );
   }
   
-  Widget _buildBody(BuildContext context, WidgetRef ref, RecordState state) {
+  Widget _buildBody(BuildContext context, WidgetRef ref, RecordState state, bool isDark) {
     if (state.isLoading) {
       return const LoadingWidget(message: 'Loading records...');
     }
@@ -101,7 +102,7 @@ class _RecordsListScreenState extends ConsumerState<RecordsListScreen> {
           children: [
             const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
-            Text(state.error!),
+            Text(state.error!, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => ref.read(recordProvider.notifier).loadRecords(),
@@ -142,6 +143,8 @@ class _RecordsListScreenState extends ConsumerState<RecordsListScreen> {
                     });
                   },
                   selectedColor: const Color(0xFF7B61FF).withOpacity(0.2),
+                  backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
+                  labelStyle: TextStyle(color: isDark ? Colors.white : Colors.black87),
                 ),
                 const SizedBox(width: 8),
                 ...RecordType.values.map((type) {
@@ -156,6 +159,8 @@ class _RecordsListScreenState extends ConsumerState<RecordsListScreen> {
                         });
                       },
                       selectedColor: const Color(0xFF7B61FF).withOpacity(0.2),
+                      backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
+                      labelStyle: TextStyle(color: isDark ? Colors.white : Colors.black87),
                     ),
                   );
                 }),
@@ -172,7 +177,7 @@ class _RecordsListScreenState extends ConsumerState<RecordsListScreen> {
                     _searchQuery.isNotEmpty 
                         ? 'No matching records found' 
                         : 'No records of this type',
-                    style: TextStyle(color: Colors.grey[600]),
+                    style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
                   ),
                 )
               : ListView.builder(
@@ -180,7 +185,7 @@ class _RecordsListScreenState extends ConsumerState<RecordsListScreen> {
                   itemCount: _filteredRecords.length,
                   itemBuilder: (context, index) {
                     final record = _filteredRecords[index];
-                    return _buildRecordCard(context, ref, record);
+                    return _buildRecordCard(context, ref, record, isDark);
                   },
                 ),
         ),
@@ -188,10 +193,11 @@ class _RecordsListScreenState extends ConsumerState<RecordsListScreen> {
     );
   }
   
-  Widget _buildRecordCard(BuildContext context, WidgetRef ref, HealthRecord record) {
+  Widget _buildRecordCard(BuildContext context, WidgetRef ref, HealthRecord record, bool isDark) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: isDark ? Colors.grey[850] : Colors.white,
       child: Dismissible(
         key: Key(record.id),
         background: Container(
@@ -254,27 +260,28 @@ class _RecordsListScreenState extends ConsumerState<RecordsListScreen> {
                     children: [
                       Text(
                         record.title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
+                          color: isDark ? Colors.white : Colors.black87,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         '${record.recordType.displayName} • ${_formatDate(record.recordDate)}',
-                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                        style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600], fontSize: 12),
                       ),
                       if (record.doctorName != null) ...[
                         const SizedBox(height: 4),
                         Text(
                           'Dr. ${record.doctorName}',
-                          style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                          style: TextStyle(color: isDark ? Colors.grey[500] : Colors.grey[500], fontSize: 12),
                         ),
                       ],
                     ],
                   ),
                 ),
-                Icon(Icons.chevron_right, color: Colors.grey[400]),
+                Icon(Icons.chevron_right, color: isDark ? Colors.grey[600] : Colors.grey[400]),
               ],
             ),
           ),

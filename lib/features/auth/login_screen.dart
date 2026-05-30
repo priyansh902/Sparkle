@@ -11,6 +11,7 @@ import 'package:sparkle_lite/shared/widgets/primary_button.dart';
 /// Login screen for existing users
 /// This screen allows users to enter their email and password to log in to their account. It includes form validation, error handling, and a link to the signup screen for new users. The login process interacts with the AuthProvider to manage authentication state and navigate to the appropriate screen based on whether onboarding is needed.
 /// The UI is designed to be clean and user-friendly, with clear input fields, error messages, and a prominent login button. It also includes a back button to return to the welcome screen.
+
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -18,8 +19,6 @@ class LoginScreen extends ConsumerStatefulWidget {
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-
-/// State class for LoginScreen
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
@@ -41,7 +40,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       );
       
       if (success && mounted) {
-        // Check if onboarding is needed
         final authRepo = ref.read(authRepositoryProvider);
         final hasOnboarding = await authRepo.hasCompletedOnboarding();
         if (!hasOnboarding) {
@@ -56,6 +54,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Scaffold(
       body: SafeArea(
@@ -69,7 +68,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 // Back button
                 IconButton(
                   onPressed: () => context.go(AppConstants.routeWelcome),
-                  icon: const Icon(Icons.arrow_back),
+                  icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
                   padding: EdgeInsets.zero,
                   alignment: Alignment.centerLeft,
                 ),
@@ -79,13 +78,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   'Welcome Back',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.black87,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Sign in to continue to Sparkle Lite',
                   style: TextStyle(
-                    color: Colors.grey[600],
+                    color: isDark ? Colors.grey[400] : Colors.grey[600],
                     fontSize: 14,
                   ),
                 ),
@@ -93,14 +93,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 // Email field
                 TextFormField(
                   controller: _emailController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Email',
-                    prefixIcon: Icon(Icons.email_outlined),
-                    border: OutlineInputBorder(
+                    prefixIcon: const Icon(Icons.email_outlined),
+                    border: const OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(12)),
                     ),
+                    filled: true,
+                    fillColor: isDark ? Colors.grey[800] : Colors.grey[50],
+                    labelStyle: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
                   ),
                   keyboardType: TextInputType.emailAddress,
+                  style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Email is required';
@@ -122,6 +126,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                        color: isDark ? Colors.grey[400] : Colors.grey[600],
                       ),
                       onPressed: () {
                         setState(() {
@@ -132,8 +137,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     border: const OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(12)),
                     ),
+                    filled: true,
+                    fillColor: isDark ? Colors.grey[800] : Colors.grey[50],
+                    labelStyle: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
                   ),
                   obscureText: _obscurePassword,
+                  style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Password is required';
@@ -150,17 +159,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.red[50],
+                      color: isDark ? Colors.red[900]?.withOpacity(0.3) : Colors.red[50],
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.error_outline, color: Colors.red[400], size: 20),
+                        Icon(Icons.error_outline, color: isDark ? Colors.red[300] : Colors.red[400], size: 20),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             authState.error!,
-                            style: TextStyle(color: Colors.red[700], fontSize: 13),
+                            style: TextStyle(color: isDark ? Colors.red[300] : Colors.red[700], fontSize: 13),
                           ),
                         ),
                       ],
@@ -182,7 +191,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   children: [
                     Text(
                       "Don't have an account? ",
-                      style: TextStyle(color: Colors.grey[600]),
+                      style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
                     ),
                     TextButton(
                       onPressed: () {

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sparkle_lite/core/constants/app_constants.dart';
 import 'package:sparkle_lite/Data/models/health_record_model.dart';
 import 'package:sparkle_lite/Data/models/symptom_log_model.dart';
+import 'package:sparkle_lite/providers/insight_provider.dart';
 import 'package:sparkle_lite/providers/record_provider.dart';
 import 'package:sparkle_lite/providers/symptom_provider.dart';
 import 'package:sparkle_lite/shared/utils/responsive_utils.dart';
@@ -69,8 +70,8 @@ class DashboardComponents {
         ),
         const SizedBox(height: 12),
         ResponsiveGrid(
-          children: actions.map((action) => _buildQuickActionCard(context, action)).toList(),
           childAspectRatio: context.quickActionHeight / 100,
+          children: actions.map((action) => _buildQuickActionCard(context, action)).toList(),
         ),
       ],
     );
@@ -110,6 +111,7 @@ class DashboardComponents {
   static Widget buildStatCards(BuildContext context, WidgetRef ref) {
     final symptomState = ref.watch(symptomProvider);
     final recordState = ref.watch(recordProvider);
+    final insightState = ref.watch(insightProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return ResponsiveRow(
@@ -133,7 +135,7 @@ class DashboardComponents {
         _buildStatCard(
           context,
           'AI Insights',
-          '0',
+          '${insightState.insights.length}',
           Icons.psychology,
           const Color(0xFF4ECDC4),
           isDark,
@@ -591,6 +593,175 @@ class DashboardComponents {
     if (dateOnly == today) return 'Today';
     if (dateOnly == yesterday) return 'Yesterday';
     return '${date.month}/${date.day}/${date.year}';
+  }
+
+// RECENT AI INSIGHTS 
+  static Widget buildRecentInsightsSection(BuildContext context, WidgetRef ref, InsightState state) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Recent AI Insights',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 18,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
+            ),
+            TextButton(
+              onPressed: () => context.push(AppConstants.routeAIInsightInput),
+              child: const Text('Generate New'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _buildRecentInsightsContent(context, ref, state),
+      ],
+    );
+  }
+
+  static Widget _buildRecentInsightsContent(BuildContext context, WidgetRef ref, InsightState state) {
+    if (state.isLoading) {
+      return const Center(child: Padding(
+        padding: EdgeInsets.all(32),
+        child: CircularProgressIndicator(),
+      ));
+    }
+
+    if (state.insights.isEmpty) {
+      return EmptyStateWidget(
+        title: 'No insights yet',
+        message: 'Generate AI insights based on your symptoms',
+        buttonText: 'Generate Insight',
+        onButtonPressed: () => context.push(AppConstants.routeAIInsightInput),
+        icon: Icons.psychology_outlined,
+      );
+    }
+
+    return Column(
+      children: state.insights.take(3).map((insight) => _buildInsightTile(context, insight)).toList(),
+    );
+  }
+
+  static Widget _buildInsightTile(BuildContext context, dynamic insight) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: isDark ? Colors.grey[850] : Colors.white,
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: const Color(0xFF4ECDC4).withOpacity(0.2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const Icon(Icons.psychology, color: Color(0xFF4ECDC4)),
+        ),
+        title: Text(
+          'Insight from ${_formatDate(insight.createdAt)}',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
+        ),
+        subtitle: Text(
+          insight.summary.length > 80 
+              ? '${insight.summary.substring(0, 80)}...' 
+              : insight.summary,
+          style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600], fontSize: 12),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+        onTap: () {
+          // Show insight details
+          _showInsightDialog(context, insight);
+        },
+      ),
+    );
+  }
+
+  static void _showInsightDialog(BuildContext context, dynamic insight) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: isDark ? Colors.grey[850] : Colors.white,
+        title: Row(
+          children: [
+            const Icon(Icons.psychology, color: Color(0xFF4ECDC4)),
+            const SizedBox(width: 8),
+            Text('AI Health Insight', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                insight.summary,
+                style: TextStyle(fontWeight: FontWeight.w500, color: isDark ? Colors.white : Colors.black87),
+              ),
+              const SizedBox(height: 16),
+              const Divider(),
+              const SizedBox(height: 8),
+              Text(
+                'Pattern: ${insight.possiblePattern}',
+                style: TextStyle(fontSize: 14, color: isDark ? Colors.grey[300] : Colors.grey[700]),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Guidance: ${insight.careGuidance}',
+                style: TextStyle(fontSize: 14, color: isDark ? Colors.grey[300] : Colors.grey[700]),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Questions for your doctor:',
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+              ),
+              const SizedBox(height: 8),
+              ...insight.doctorQuestions.map((q) => Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('• ', style: TextStyle(fontSize: 13, color: isDark ? Colors.grey[400] : Colors.grey[600])),
+                    Expanded(child: Text(q, style: TextStyle(fontSize: 13, color: isDark ? Colors.grey[300] : Colors.grey[700]))),
+                  ],
+                ),
+              )),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.grey[800] : Colors.grey[100],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  insight.disclaimer,
+                  style: TextStyle(color: isDark ? Colors.grey[500] : Colors.grey[600], fontSize: 11, fontStyle: FontStyle.italic),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
   }
 }
 

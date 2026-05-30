@@ -41,17 +41,30 @@ class AuthNotifier extends StateNotifier<AuthState> {
   AuthNotifier(this._authRepository) : super(AuthState.initial) {
     _checkAuthStatus();
   }
-  
+
   Future<void> _checkAuthStatus() async {
     final isLoggedIn = await _authRepository.isLoggedIn();
-    if (isLoggedIn) {
-      final user = await _authRepository.getCurrentUser();
-      state = state.copyWith(
-        isAuthenticated: true,
-        user: user,
-      );
+
+    if (!isLoggedIn) {
+      state = AuthState.initial;
+      return;
     }
+
+    final user = await _authRepository.getCurrentUser();
+
+    if (user == null) {
+      await _authRepository.logout();
+      state = AuthState.initial;
+      return;
+    }
+
+    state = state.copyWith(
+      isAuthenticated: true,
+      user: user,
+    );
+ 
   }
+  
   
   Future<bool> login(String email, String password) async {
     state = state.copyWith(isLoading: true, error: null);

@@ -28,27 +28,28 @@ class _TimelineScreenState extends ConsumerState<TimelineScreen> {
   @override
   Widget build(BuildContext context) {
     final timelineState = ref.watch(timelineProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Health Timeline'),
+        title: Text('Health Timeline', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(50),
-          child: _buildFilterChips(),
+          child: _buildFilterChips(isDark),
         ),
       ),
       body: RefreshIndicator(
         onRefresh: () async {
           await ref.read(timelineProvider.notifier).refresh();
         },
-        child: _buildBody(context, timelineState),
+        child: _buildBody(context, timelineState, isDark),
       ),
     );
   }
   
-  Widget _buildFilterChips() {
+  Widget _buildFilterChips(bool isDark) {
     final timelineState = ref.watch(timelineProvider);
     
     return Padding(
@@ -58,39 +59,43 @@ class _TimelineScreenState extends ConsumerState<TimelineScreen> {
         child: Row(
           children: [
             FilterChip(
-              label: const Text('All'),
+              label: Text('All', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
               selected: timelineState.selectedFilter == null,
               onSelected: (_) {
                 ref.read(timelineProvider.notifier).filterByType(null);
               },
               selectedColor: const Color(0xFF7B61FF).withOpacity(0.2),
+              backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
             ),
             const SizedBox(width: 8),
             FilterChip(
-              label: const Text('Symptoms'),
+              label: Text('Symptoms', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
               selected: timelineState.selectedFilter == TimelineItemType.symptom,
               onSelected: (_) {
                 ref.read(timelineProvider.notifier).filterByType(TimelineItemType.symptom);
               },
               selectedColor: const Color(0xFF7B61FF).withOpacity(0.2),
+              backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
             ),
             const SizedBox(width: 8),
             FilterChip(
-              label: const Text('Records'),
+              label: Text('Records', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
               selected: timelineState.selectedFilter == TimelineItemType.record,
               onSelected: (_) {
                 ref.read(timelineProvider.notifier).filterByType(TimelineItemType.record);
               },
               selectedColor: const Color(0xFF7B61FF).withOpacity(0.2),
+              backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
             ),
             const SizedBox(width: 8),
             FilterChip(
-              label: const Text('AI Insights'),
+              label: Text('AI Insights', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
               selected: timelineState.selectedFilter == TimelineItemType.insight,
               onSelected: (_) {
                 ref.read(timelineProvider.notifier).filterByType(TimelineItemType.insight);
               },
               selectedColor: const Color(0xFF7B61FF).withOpacity(0.2),
+              backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
             ),
           ],
         ),
@@ -98,7 +103,7 @@ class _TimelineScreenState extends ConsumerState<TimelineScreen> {
     );
   }
   
-  Widget _buildBody(BuildContext context, TimelineState state) {
+  Widget _buildBody(BuildContext context, TimelineState state, bool isDark) {
     if (state.isLoading) {
       return const LoadingWidget(message: 'Loading timeline...');
     }
@@ -110,7 +115,7 @@ class _TimelineScreenState extends ConsumerState<TimelineScreen> {
           children: [
             const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
-            Text(state.error!),
+            Text(state.error!, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => ref.read(timelineProvider.notifier).refresh(),
@@ -145,16 +150,15 @@ class _TimelineScreenState extends ConsumerState<TimelineScreen> {
         final item = state.filteredItems[index];
         return TimelineItemWidget(
           item: item,
-          onTap: () => _onItemTap(context, item),
+          onTap: () => _onItemTap(context, item, isDark),
         );
       },
     );
   }
   
-  void _onItemTap(BuildContext context, TimelineItem item) {
+  void _onItemTap(BuildContext context, TimelineItem item, bool isDark) {
     switch (item.type) {
       case TimelineItemType.symptom:
-        // Navigate to symptom detail/edit
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Tap symptom: ${item.id}')),
         );
@@ -165,22 +169,23 @@ class _TimelineScreenState extends ConsumerState<TimelineScreen> {
         );
         break;
       case TimelineItemType.insight:
-        _showInsightDialog(context, item);
+        _showInsightDialog(context, item, isDark);
         break;
     }
   }
   
-  void _showInsightDialog(BuildContext context, TimelineItem item) {
+  void _showInsightDialog(BuildContext context, TimelineItem item, bool isDark) {
     final insightData = item.data['insight'];
     
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: isDark ? Colors.grey[850] : Colors.white,
         title: Row(
           children: [
             const Icon(Icons.psychology, color: Color(0xFF4ECDC4)),
             const SizedBox(width: 8),
-            const Text('AI Health Insight'),
+            Text('AI Health Insight', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
           ],
         ),
         content: SingleChildScrollView(
@@ -190,24 +195,24 @@ class _TimelineScreenState extends ConsumerState<TimelineScreen> {
             children: [
               Text(
                 insightData['summary'],
-                style: const TextStyle(fontWeight: FontWeight.w500),
+                style: TextStyle(fontWeight: FontWeight.w500, color: isDark ? Colors.white : Colors.black87),
               ),
               const SizedBox(height: 16),
-              const Divider(),
+              Divider(color: isDark ? Colors.grey[700] : Colors.grey[300]),
               const SizedBox(height: 8),
               Text(
                 'Pattern: ${insightData['possiblePattern']}',
-                style: const TextStyle(fontSize: 14),
+                style: TextStyle(fontSize: 14, color: isDark ? Colors.grey[300] : Colors.grey[700]),
               ),
               const SizedBox(height: 8),
               Text(
                 'Guidance: ${insightData['careGuidance']}',
-                style: const TextStyle(fontSize: 14),
+                style: TextStyle(fontSize: 14, color: isDark ? Colors.grey[300] : Colors.grey[700]),
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'Questions for your doctor:',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: isDark ? Colors.white : Colors.black87),
               ),
               const SizedBox(height: 8),
               ...(insightData['doctorQuestions'] as List).map((q) => Padding(
@@ -215,8 +220,8 @@ class _TimelineScreenState extends ConsumerState<TimelineScreen> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('• ', style: TextStyle(fontSize: 13)),
-                    Expanded(child: Text(q, style: const TextStyle(fontSize: 13))),
+                    Text('• ', style: TextStyle(fontSize: 13, color: isDark ? Colors.grey[400] : Colors.grey[600])),
+                    Expanded(child: Text(q, style: TextStyle(fontSize: 13, color: isDark ? Colors.grey[300] : Colors.grey[700]))),
                   ],
                 ),
               )),
@@ -224,12 +229,12 @@ class _TimelineScreenState extends ConsumerState<TimelineScreen> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
+                  color: isDark ? Colors.grey[800] : Colors.grey[100],
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   insightData['disclaimer'],
-                  style: TextStyle(color: Colors.grey[600], fontSize: 11, fontStyle: FontStyle.italic),
+                  style: TextStyle(color: isDark ? Colors.grey[500] : Colors.grey[600], fontSize: 11, fontStyle: FontStyle.italic),
                 ),
               ),
             ],

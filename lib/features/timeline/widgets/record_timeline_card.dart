@@ -19,10 +19,12 @@ class RecordTimelineCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final recordData = item.data['record'];
     final record = HealthRecord.fromJson(recordData);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: isDark ? Colors.grey[850] : Colors.white,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
@@ -38,16 +40,17 @@ class RecordTimelineCard extends StatelessWidget {
                   children: [
                     Text(
                       _getDay(item.date),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white : Colors.black87,
                       ),
                     ),
                     Text(
                       _getMonth(item.date),
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey[600],
+                        color: isDark ? Colors.grey[400] : Colors.grey[600],
                       ),
                     ),
                   ],
@@ -72,32 +75,33 @@ class RecordTimelineCard extends StatelessWidget {
                   children: [
                     Text(
                       item.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
+                        color: isDark ? Colors.white : Colors.black87,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       record.recordType.displayName,
-                      style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                      style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600], fontSize: 13),
                     ),
                     if (record.doctorName != null) ...[
                       const SizedBox(height: 2),
                       Text(
                         'Dr. ${record.doctorName}',
-                        style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                        style: TextStyle(color: isDark ? Colors.grey[500] : Colors.grey[500], fontSize: 12),
                       ),
                     ],
                     if (record.hasFile) ...[
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          Icon(Icons.attach_file, size: 14, color: Colors.grey[400]),
+                          Icon(Icons.attach_file, size: 14, color: isDark ? Colors.grey[600] : Colors.grey[400]),
                           const SizedBox(width: 4),
                           Text(
                             'Has attachment',
-                            style: TextStyle(color: Colors.grey[500], fontSize: 11),
+                            style: TextStyle(color: isDark ? Colors.grey[500] : Colors.grey[500], fontSize: 11),
                           ),
                         ],
                       ),
@@ -106,7 +110,7 @@ class RecordTimelineCard extends StatelessWidget {
                 ),
               ),
               
-              Icon(Icons.chevron_right, color: Colors.grey[400]),
+              Icon(Icons.chevron_right, color: isDark ? Colors.grey[600] : Colors.grey[400]),
             ],
           ),
         ),
