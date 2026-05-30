@@ -24,6 +24,16 @@ class FirebaseAuthService implements AuthInterface {
       
       final user = userCredential.user;
       if (user != null) {
+
+        if (!user.emailVerified) {
+          await _auth.signOut();
+          return AuthResult(
+            success: false, 
+            error: 'Please verify your email before logging in. Check your inbox for a verification link.',
+          );
+        }
+
+
         // Get user data from Firestore
         DocumentSnapshot userDoc = await _firestore
             .collection('users')
@@ -59,12 +69,6 @@ class FirebaseAuthService implements AuthInterface {
               success: false,
               error: 'Account data is missing. Please contact support.',
             );
-          // appUser = UserModel(
-          //   id: user.uid,
-          //   email: user.email ?? email,
-          //   name: user.displayName ?? '',
-          //   createdAt: DateTime.now(),
-          // );
         }
         
         // Save session
@@ -80,62 +84,108 @@ class FirebaseAuthService implements AuthInterface {
       }
       return AuthResult(success: false, error: 'Login failed');
     } on firebase.FirebaseAuthException catch (e) {
-      return AuthResult(success: false, error: _getAuthErrorMessage(e));
+        if (e.code == 'user-not-found') {
+          return AuthResult(success: false, error: 'No account found with this email');
+        } else if (e.code == 'wrong-password') {
+          return AuthResult(success: false, error: 'Incorrect password');
+        } 
+          return AuthResult(success: false, error: _getAuthErrorMessage(e));
+
     } catch (e) {
       return AuthResult(success: false, error: e.toString());
     }
   }
 
   @override
-  Future<AuthResult> signup({
-    required String email,
-    required String password,
-    required String name,
-  }) async {
-    try {
-      final userCredential = await _auth.createUserWithEmailAndPassword(
+Future<AuthResult> signup({
+  required String email,
+  required String password,
+  required String name,
+}) async {
+  try {
+    print("Creating user...");
+
+    final userCredential = await _auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+
+    print("User created");
+
+    final user = userCredential.user;
+
+    if (user != null) {
+      await user.updateDisplayName(name);
+
+      print("Sending verification email");
+
+      await user.sendEmailVerification();
+
+      print("Verification email request completed");
+
+      final appUser = UserModel(
+        id: user.uid,
         email: email,
-        password: password,
+        name: name,
+        createdAt: DateTime.now(),
       );
-      
-      final user = userCredential.user;
-      if (user != null) {
-        await user.updateDisplayName(name);
-        
-        final appUser = UserModel(
-          id: user.uid,
-          email: email,
-          name: name,
-          createdAt: DateTime.now(),
-        );
-        
-        // Save user to Firestore
-        await _firestore.collection('users').doc(user.uid).set({
-          'name': name,
-          'email': email,
-          'createdAt': Timestamp.now(),
-          'onboardingCompleted': false,
-          'conditions': [],
-          'medications': [],
-        });
-        
-        // Save session
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString(AppConstants.keyUserId, user.uid);
-        await prefs.setBool(AppConstants.keyIsLoggedIn, true);
-        
-        return AuthResult(
-          success: true,
-          userId: user.uid,
-          user: appUser,
-        );
-      }
-      return AuthResult(success: false, error: 'Signup failed');
-    } on firebase.FirebaseAuthException catch (e) {
-      return AuthResult(success: false, error: _getAuthErrorMessage(e));
-    } catch (e) {
-      return AuthResult(success: false, error: e.toString());
+
+      await _firestore.collection('users').doc(user.uid).set({
+        'name': name,
+        'email': email,
+        'createdAt': Timestamp.now(),
+        'onboardingCompleted': false,
+        'conditions': [],
+        'medications': [],
+      });
+
+      return AuthResult(
+        success: true,
+        userId: user.uid,
+        user: appUser,
+      );
     }
+
+    return AuthResult(
+      success: false,
+      error: 'Signup failed',
+    );
+  } on firebase.FirebaseAuthException catch (e) {
+    print("FIREBASE ERROR: ${e.code}");
+    print("MESSAGE: ${e.message}");
+
+    return AuthResult(
+      success: false,
+      error: _getAuthErrorMessage(e),
+    );
+  } catch (e) {
+    print("GENERAL ERROR: $e");
+
+    return AuthResult(
+      success: false,
+      error: e.toString(),
+    );
+  }
+}
+
+
+  // New method to resend verification email
+  @override
+  Future<void> sendVerificationEmail() async {
+    final user = _auth.currentUser;
+    if (user != null && !user.emailVerified) {
+      await user.sendEmailVerification();
+    }
+  }
+
+  @override
+  Future<bool> isEmailVerified() async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      await user.reload();
+      return user.emailVerified;
+    }
+    return false;
   }
 
   @override
@@ -148,15 +198,17 @@ class FirebaseAuthService implements AuthInterface {
 
   @override
   Future<bool> isLoggedIn() async {
-    // final prefs = await SharedPreferences.getInstance();
-    // return prefs.getBool(AppConstants.keyIsLoggedIn) ?? false;
-    return _auth.currentUser != null;
+   final prefs = await SharedPreferences.getInstance();
+    final hasLocalSession = prefs.getBool(AppConstants.keyIsLoggedIn) ?? false;
+    final hasFirebaseUser = _auth.currentUser != null;
+    
+    // Both should be true for a valid session
+    return hasLocalSession && hasFirebaseUser;
   }
 
   @override
   Future<bool> hasCompletedOnboarding() async {
-    // final prefs = await SharedPreferences.getInstance();
-    // return prefs.getBool(AppConstants.keyOnboardingCompleted) ?? false;
+   
     final user = _auth.currentUser;
     if (user == null) return false;
     
@@ -232,34 +284,6 @@ class FirebaseAuthService implements AuthInterface {
           medications: List<String>.from(data['medications'] ?? []),
           createdAt: (data['createdAt'] as Timestamp).toDate(),
         );
-    
-    // if (userDoc.exists) {
-    //   final data = userDoc.data() as Map<String, dynamic>;
-    //   return UserModel(
-    //     id: firebaseUser.uid,
-    //     email: firebaseUser.email ?? '',
-    //     name: data['name'] ?? firebaseUser.displayName ?? '',
-    //     nickname: data['nickname'],
-    //     ageRange: data['ageRange'],
-    //     lifeStage: data['lifeStage'] != null 
-    //         ? _parseLifeStage(data['lifeStage']) 
-    //         : null,
-    //     cycleStatus: data['cycleStatus'] != null 
-    //         ? _parseCycleStatus(data['cycleStatus']) 
-    //         : null,
-    //     conditions: List<String>.from(data['conditions'] ?? []),
-    //     medications: List<String>.from(data['medications'] ?? []),
-    //     createdAt: (data['createdAt'] as Timestamp).toDate(),
-    //   );
-    // }
-
-    
-    // // return UserModel(
-    // //   id: firebaseUser.uid,
-    // //   email: firebaseUser.email ?? '',
-    // //   name: firebaseUser.displayName ?? '',
-    // //   createdAt: DateTime.now(),
-    // // );
   }
 
   @override
@@ -375,6 +399,8 @@ class FirebaseAuthService implements AuthInterface {
         return 'Invalid email address';
       case 'weak-password':
         return 'Password is too weak';
+      case 'network-request-failed':
+        return 'Network error. Check your connection.';
       default:
         return e.message ?? 'Authentication failed';
     }

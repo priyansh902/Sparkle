@@ -26,6 +26,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  bool _isLoading = false; 
 
   @override
   void dispose() {
@@ -38,16 +39,59 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
   Future<void> _handleSignup() async {
     if (_formKey.currentState!.validate()) {
-      final success = await ref.read(authProvider.notifier).signup(
+      setState(() => _isLoading = true);
+      
+      final result = await ref.read(authProvider.notifier).signup(
         _emailController.text.trim(),
         _passwordController.text,
         _nameController.text.trim(),
       );
       
-      if (success && mounted) {
-        context.go(AppConstants.routeOnboarding);
+      setState(() => _isLoading = false);
+      
+      if (result && mounted) {
+        // Show verification email dialog
+        _showVerificationDialog();
+      } else if (!result && mounted) {
+        // Error is already handled by provider
       }
     }
+  }
+
+  void _showVerificationDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text('Verify Your Email'),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.email, size: 50, color: Color(0xFF7B61FF)),
+            SizedBox(height: 16),
+            Text(
+              'A verification email has been sent to your email address.',
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Please verify your email before logging in.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 12),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              context.go(AppConstants.routeLogin);
+            },
+            child: const Text('Go to Login'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

@@ -71,5 +71,13 @@ class AuthRepository {
   Future<void> deleteAccount() async {
     await authService.deleteAccount();
   }
+
+  Future<void> sendVerificationEmail() async {
+    await authService.sendVerificationEmail();
+  }
+
+  Future<bool> isEmailVerified() async {
+    return await authService.isEmailVerified();
+  }
   
 }

@@ -32,6 +32,10 @@ abstract class AuthInterface {
   Future<void> saveUserProfile(UserModel user);
 
   Future<void> deleteAccount();
+
+  Future<void> sendVerificationEmail();
+  
+  Future<bool> isEmailVerified();
 }
 
 /// Result class for authentication operations

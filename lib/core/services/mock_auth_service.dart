@@ -211,6 +211,18 @@ class MockAuthService implements AuthInterface {
     
     await logout();
   }
+  
+  @override
+  Future<bool> isEmailVerified() {
+    // TODO: implement isEmailVerified
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<void> sendVerificationEmail() {
+    // TODO: implement sendVerificationEmail
+    throw UnimplementedError();
+  }
 
 
 

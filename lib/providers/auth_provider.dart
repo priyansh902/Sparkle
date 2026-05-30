@@ -103,8 +103,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     if (result.success) {
       state = state.copyWith(
         isLoading: false,
-        isAuthenticated: true,
-        user: result.user,
+        isAuthenticated: false, // User needs to verify email before being authenticated
+        user: null, // Don't set user until email is verified
       );
       return true;
     } else {
@@ -147,6 +147,18 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
       rethrow;
     }
+  }
+
+  Future<void> sendVerificationEmail() async {
+    try {
+      await _authRepository.sendVerificationEmail();
+    } catch (e) {
+      state = state.copyWith(error: e.toString());
+    }
+  }
+
+  Future<bool> checkEmailVerified() async {
+    return await _authRepository.isEmailVerified();
   }
 }
 
