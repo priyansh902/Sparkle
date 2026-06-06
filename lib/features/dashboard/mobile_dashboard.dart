@@ -109,7 +109,7 @@ class MobileDashboard extends ConsumerWidget {
     );
   }
 
-  // ✅ ADD LOGOUT METHOD
+  // ADD LOGOUT METHOD
   void _logout(WidgetRef ref, BuildContext context) async {
     final confirmed = await showDialog<bool>(
       context: context,
